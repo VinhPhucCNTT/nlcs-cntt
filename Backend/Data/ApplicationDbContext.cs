@@ -1,0 +1,39 @@
+using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore;
+
+using Backend.Models.Users;
+
+namespace Backend.Data
+{
+    public class ApplicationDbContext
+        : IdentityDbContext<ApplicationUser, IdentityRole<Guid>, Guid>
+    {
+        public ApplicationDbContext(DbContextOptions<ApplicationDbContext> options)
+            : base(options) { }
+
+        public DbSet<Course> Courses => Set<Course>();
+        public DbSet<Section> Sections => Set<Section>();
+        public DbSet<Lesson> Lessons => Set<Lesson>();
+
+        public DbSet<Enrollment> Enrollments => Set<Enrollment>();
+        public DbSet<LessonProgress> LessonProgress => Set<LessonProgress>();
+
+        public DbSet<Quiz> Quizzes => Set<Quiz>();
+        public DbSet<Question> Questions => Set<Question>();
+        public DbSet<Answer> Answers => Set<Answer>();
+        public DbSet<QuizAttempt> QuizAttempts => Set<QuizAttempt>();
+
+        protected override void OnModelCreating(ModelBuilder builder)
+        {
+            base.OnModelCreating(builder);
+
+            builder.Entity<Enrollment>()
+                .HasIndex(e => new { e.UserId, e.CourseId })
+                .IsUnique();
+
+            builder.Entity<LessonProgress>()
+                .HasIndex(p => new { p.UserId, p.LessonId })
+                .IsUnique();
+        }
+    }
+}
