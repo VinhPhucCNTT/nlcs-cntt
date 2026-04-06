@@ -1,5 +1,4 @@
-using Models.Assessments;
-using Models.Users;
+using Backend.Models.Users;
 
 namespace Backend.Models.Assessments;
 

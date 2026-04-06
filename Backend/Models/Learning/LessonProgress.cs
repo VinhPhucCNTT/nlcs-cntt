@@ -1,5 +1,5 @@
 using Backend.Models.Users;
-using Models.Courses;
+using Backend.Models.Courses;
 
 namespace Backend.Models.Learning;
 

@@ -1,5 +1,3 @@
-using Models.Courses;
-
 namespace Backend.Models.Courses;
 
 public class Section

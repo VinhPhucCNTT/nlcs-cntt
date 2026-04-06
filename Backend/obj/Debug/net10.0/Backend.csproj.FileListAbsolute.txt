@@ -121,3 +121,12 @@ D:\nlcs-cntt\Backend\obj\Debug\net10.0\refint\Backend.dll
 D:\nlcs-cntt\Backend\obj\Debug\net10.0\Backend.pdb
 D:\nlcs-cntt\Backend\obj\Debug\net10.0\Backend.genruntimeconfig.cache
 D:\nlcs-cntt\Backend\obj\Debug\net10.0\ref\Backend.dll
+D:\nlcs-cntt\Backend\bin\Debug\net10.0\Microsoft.AspNetCore.Identity.EntityFrameworkCore.dll
+D:\nlcs-cntt\Backend\bin\Debug\net10.0\Microsoft.AspNetCore.Authentication.JwtBearer.dll
+D:\nlcs-cntt\Backend\bin\Debug\net10.0\Microsoft.IdentityModel.Abstractions.dll
+D:\nlcs-cntt\Backend\bin\Debug\net10.0\Microsoft.IdentityModel.JsonWebTokens.dll
+D:\nlcs-cntt\Backend\bin\Debug\net10.0\Microsoft.IdentityModel.Logging.dll
+D:\nlcs-cntt\Backend\bin\Debug\net10.0\Microsoft.IdentityModel.Protocols.dll
+D:\nlcs-cntt\Backend\bin\Debug\net10.0\Microsoft.IdentityModel.Protocols.OpenIdConnect.dll
+D:\nlcs-cntt\Backend\bin\Debug\net10.0\Microsoft.IdentityModel.Tokens.dll
+D:\nlcs-cntt\Backend\bin\Debug\net10.0\System.IdentityModel.Tokens.Jwt.dll

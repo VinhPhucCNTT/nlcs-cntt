@@ -1,6 +1,6 @@
 using Backend.Models.Courses;
 using Microsoft.AspNetCore.Identity;
-using Models.Learning;
+using Backend.Models.Learning;
 
 namespace Backend.Models.Users;
 

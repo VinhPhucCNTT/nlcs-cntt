@@ -1,4 +1,4 @@
-using Models.Courses;
+using Backend.Models.Courses;
 
 namespace Backend.Models.Assessments;
 

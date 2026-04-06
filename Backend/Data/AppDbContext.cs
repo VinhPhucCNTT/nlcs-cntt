@@ -1,14 +1,18 @@
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 
 using Backend.Models.Users;
+using Backend.Models.Courses;
+using Backend.Models.Learning;
+using Backend.Models.Assessments;
 
 namespace Backend.Data
 {
-    public class ApplicationDbContext
+    public class AppDbContext
         : IdentityDbContext<ApplicationUser, IdentityRole<Guid>, Guid>
     {
-        public ApplicationDbContext(DbContextOptions<ApplicationDbContext> options)
+        public AppDbContext(DbContextOptions<AppDbContext> options)
             : base(options) { }
 
         public DbSet<Course> Courses => Set<Course>();
