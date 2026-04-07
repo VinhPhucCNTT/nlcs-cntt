@@ -672,6 +672,22 @@
           }
         }
       },
+      "Scalar.AspNetCore/2.13.20": {
+        "type": "package",
+        "compile": {
+          "lib/net10.0/Scalar.AspNetCore.dll": {
+            "related": ".xml"
+          }
+        },
+        "runtime": {
+          "lib/net10.0/Scalar.AspNetCore.dll": {
+            "related": ".xml"
+          }
+        },
+        "frameworkReferences": [
+          "Microsoft.AspNetCore.App"
+        ]
+      },
       "System.CodeDom/6.0.0": {
         "type": "package",
         "compile": {
@@ -2339,6 +2355,25 @@
         "postgresql.png"
       ]
     },
+    "Scalar.AspNetCore/2.13.20": {
+      "sha512": "KLWQcH0YisMa0nzv36S5TcKgZ5seAaTHXVcdG8S3H0UFFtAeBYwSOnzme6S9Ch1Tl9trpa0G8aiCjzF9H9khTw==",
+      "type": "package",
+      "path": "scalar.aspnetcore/2.13.20",
+      "files": [
+        ".nupkg.metadata",
+        ".signature.p7s",
+        "README.md",
+        "icon.png",
+        "lib/net10.0/Scalar.AspNetCore.dll",
+        "lib/net10.0/Scalar.AspNetCore.xml",
+        "lib/net8.0/Scalar.AspNetCore.dll",
+        "lib/net8.0/Scalar.AspNetCore.xml",
+        "lib/net9.0/Scalar.AspNetCore.dll",
+        "lib/net9.0/Scalar.AspNetCore.xml",
+        "scalar.aspnetcore.2.13.20.nupkg.sha512",
+        "scalar.aspnetcore.nuspec"
+      ]
+    },
     "System.CodeDom/6.0.0": {
       "sha512": "CPc6tWO1LAer3IzfZufDBRL+UZQcj5uS207NHALQzP84Vp/z6wF0Aa0YZImOQY8iStY0A2zI/e3ihKNPfUm8XA==",
       "type": "package",
@@ -2560,6 +2595,7 @@
       "Microsoft.EntityFrameworkCore >= 10.0.5",
       "Microsoft.EntityFrameworkCore.Design >= 10.0.5",
       "Npgsql.EntityFrameworkCore.PostgreSQL >= 10.0.1",
+      "Scalar.AspNetCore >= 2.13.20",
       "System.IdentityModel.Tokens.Jwt >= 8.17.0"
     ]
   },
@@ -2569,9 +2605,9 @@
   "project": {
     "version": "1.0.0",
     "restore": {
-      "projectUniqueName": "D:\\nlcs-cntt\\Backend\\Backend.csproj",
-      "projectName": "Backend",
-      "projectPath": "D:\\nlcs-cntt\\Backend\\Backend.csproj",
+      "projectUniqueName": "D:\\nlcs-cntt\\Backend\\backend.csproj",
+      "projectName": "backend",
+      "projectPath": "D:\\nlcs-cntt\\Backend\\backend.csproj",
       "packagesPath": "C:\\Users\\ACER\\.nuget\\packages\\",
       "outputPath": "D:\\nlcs-cntt\\Backend\\obj\\",
       "projectStyle": "PackageReference",
@@ -2631,6 +2667,10 @@
           "Npgsql.EntityFrameworkCore.PostgreSQL": {
             "target": "Package",
             "version": "[10.0.1, )"
+          },
+          "Scalar.AspNetCore": {
+            "target": "Package",
+            "version": "[2.13.20, )"
           },
           "System.IdentityModel.Tokens.Jwt": {
             "target": "Package",

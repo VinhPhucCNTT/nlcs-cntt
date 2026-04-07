@@ -1,0 +1,25 @@
+fail: Microsoft.AspNetCore.Diagnostics.DeveloperExceptionPageMiddleware[1]
+      An unhandled exception has occurred while executing the request.
+      System.InvalidOperationException: CurrentDepth (64) is equal to or larger than the maximum allowed depth of 64. Cannot write the next JSON object or array.
+         at System.Text.Json.ThrowHelper.ThrowInvalidOperationException(ExceptionResource resource, Int32 currentDepth, Int32 maxDepth, Byte token, JsonTokenType tokenType)
+         at System.Text.Json.Utf8JsonWriter.ThrowInvalidOperationException_DepthTooLarge()
+         at System.Text.Json.Utf8JsonWriter.WriteStart(Byte token)
+         at System.Text.Json.Nodes.JsonObject.WriteTo(Utf8JsonWriter writer, JsonSerializerOptions options)
+         at System.Text.Json.Nodes.JsonObject.WriteTo(Utf8JsonWriter writer, JsonSerializerOptions options)
+        --- ...Repeat 63 more times ---
+         at System.Text.Json.JsonSerializer.ReadFromNode[TValue](JsonNode node, JsonTypeInfo`1 jsonTypeInfo)
+         at Microsoft.AspNetCore.OpenApi.OpenApiSchemaService.GetOrCreateUnresolvedSchemaAsync(OpenApiDocument document, Type type, IServiceProvider scopedServiceProvider, IOpenApiSchemaTransformer[] schemaTransformers, ApiParameterDescription parameterDescription, CancellationToken cancellationToken)
+         at Microsoft.AspNetCore.OpenApi.OpenApiSchemaService.GetOrCreateSchemaAsync(OpenApiDocument document, Type type, IServiceProvider scopedServiceProvider, IOpenApiSchemaTransformer[] schemaTransformers, ApiParameterDescription parameterDescription, CancellationToken cancellationToken)
+         at Microsoft.AspNetCore.OpenApi.OpenApiDocumentService.GetResponseAsync(OpenApiDocument document, ApiDescription apiDescription, Int32 statusCode, ApiResponseType apiResponseType, IServiceProvider scopedServiceProvider, IOpenApiSchemaTransformer[] schemaTransformers, CancellationToken cancellationToken)
+         at Microsoft.AspNetCore.OpenApi.OpenApiDocumentService.GetResponsesAsync(OpenApiDocument document, ApiDescription description, IServiceProvider scopedServiceProvider, IOpenApiSchemaTransformer[] schemaTransformers, CancellationToken cancellationToken)
+         at Microsoft.AspNetCore.OpenApi.OpenApiDocumentService.GetOperationAsync(ApiDescription description, OpenApiDocument document, IServiceProvider scopedServiceProvider, IOpenApiSchemaTransformer[] schemaTransformers, CancellationToken cancellationToken)
+         at Microsoft.AspNetCore.OpenApi.OpenApiDocumentService.GetOperationsAsync(IGrouping`2 descriptions, OpenApiDocument document, IServiceProvider scopedServiceProvider, IOpenApiOperationTransformer[] operationTransformers, IOpenApiSchemaTransformer[] schemaTransformers, CancellationToken cancellationToken)
+         at Microsoft.AspNetCore.OpenApi.OpenApiDocumentService.GetOpenApiPathsAsync(OpenApiDocument document, IServiceProvider scopedServiceProvider, IOpenApiOperationTransformer[] operationTransformers, IOpenApiSchemaTransformer[] schemaTransformers, CancellationToken cancellationToken)
+         at Microsoft.AspNetCore.OpenApi.OpenApiDocumentService.GetOpenApiDocumentAsync(IServiceProvider scopedServiceProvider, HttpRequest httpRequest, CancellationToken cancellationToken)
+         at Microsoft.AspNetCore.Builder.OpenApiEndpointRouteBuilderExtensions.<>c__DisplayClass0_0.<<MapOpenApi>b__0>d.MoveNext()
+      --- End of stack trace from previous location ---
+         at Microsoft.AspNetCore.Http.Generated.<GeneratedRouteBuilderExtensions_g>F0399B8B15BE443123F4BECEE84B112C1912EE3F44D9DDD7BFA38E371FB917343__GeneratedRouteBuilderExtensionsCore.<>c__DisplayClass2_0.<<MapGet0>g__RequestHandler|5>d.MoveNext()
+      --- End of stack trace from previous location ---
+         at Microsoft.AspNetCore.Authorization.AuthorizationMiddleware.Invoke(HttpContext context)
+         at Microsoft.AspNetCore.Authentication.AuthenticationMiddleware.Invoke(HttpContext context)
+         at Microsoft.AspNetCore.Diagnostics.DeveloperExceptionPageMiddlewareImpl.Invoke(HttpContext context)

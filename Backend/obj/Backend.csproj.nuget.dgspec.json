@@ -1,15 +1,15 @@
 {
   "format": 1,
   "restore": {
-    "D:\\nlcs-cntt\\Backend\\Backend.csproj": {}
+    "D:\\nlcs-cntt\\Backend\\backend.csproj": {}
   },
   "projects": {
-    "D:\\nlcs-cntt\\Backend\\Backend.csproj": {
+    "D:\\nlcs-cntt\\Backend\\backend.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "D:\\nlcs-cntt\\Backend\\Backend.csproj",
-        "projectName": "Backend",
-        "projectPath": "D:\\nlcs-cntt\\Backend\\Backend.csproj",
+        "projectUniqueName": "D:\\nlcs-cntt\\Backend\\backend.csproj",
+        "projectName": "backend",
+        "projectPath": "D:\\nlcs-cntt\\Backend\\backend.csproj",
         "packagesPath": "C:\\Users\\ACER\\.nuget\\packages\\",
         "outputPath": "D:\\nlcs-cntt\\Backend\\obj\\",
         "projectStyle": "PackageReference",
@@ -69,6 +69,10 @@
             "Npgsql.EntityFrameworkCore.PostgreSQL": {
               "target": "Package",
               "version": "[10.0.1, )"
+            },
+            "Scalar.AspNetCore": {
+              "target": "Package",
+              "version": "[2.13.20, )"
             },
             "System.IdentityModel.Tokens.Jwt": {
               "target": "Package",

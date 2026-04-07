@@ -1,17 +1,59 @@
 using Backend.Models.Users;
-using Backend.DTO.Auth;
+using Backend.Services;
 
 using Microsoft.AspNetCore.Identity;
-using Microsoft.AspNetCore.Identity.Data;
+using Microsoft.AspNetCore.Http.HttpResults;
+using System.ComponentModel.DataAnnotations;
 
 namespace Backend.Endpoints;
 
 public static class AuthEndpoints
 {
-    public static void AddAuthEndpoints(this IEndpointRouteBuilder app, UserManager<ApplicationUser> userManager) {
-        var auth = app.MapGroup("/auth");
+    public record UserLoginRequest([EmailAddress] string Email, string Password);
+    public record UserLoginResponse(string Email, string Token);
 
-        auth.MapPost("login", async (LoginRequest request) => {
+    public record UserRegisterRequest(string FullName, [EmailAddress] string Email, string Username, string Password); // Admin role is registered manually
+    public record UserRegisterResponse(string Email);
+
+    public static void AddAuthEndpoints(this IEndpointRouteBuilder app)
+    {
+        var auth = app.MapGroup("/api/auth");
+
+        auth.MapPost("login", async Task<Results<Ok<UserLoginResponse>, UnauthorizedHttpResult>> (UserLoginRequest request, UserManager<ApplicationUser> userManager, JwtService jwtService) =>
+        {
+            var user = await userManager.FindByEmailAsync(request.Email);
+            if (user is null)
+                return TypedResults.Unauthorized();
+
+            if (!await userManager.CheckPasswordAsync(user, request.Password))
+                return TypedResults.Unauthorized();
+
+            var token = await jwtService.GenerateToken(user);
+            return TypedResults.Ok<UserLoginResponse>(new(request.Email, token));
+        });
+
+        auth.MapPost("register", async Task<Results<Ok<UserRegisterResponse>, UnauthorizedHttpResult, BadRequest<List<IdentityError>>>> (UserRegisterRequest request, UserManager<ApplicationUser> userManager) =>
+        {
+            var exist = await userManager.FindByEmailAsync(request.Email);
+            if (exist is not null)
+                return TypedResults.Unauthorized();
+
+            var user = new ApplicationUser
+            {
+                FullName = request.FullName,
+                UserName = request.Username,
+                Email = request.Email
+            };
+
+            var result = await userManager.CreateAsync(user, request.Password);
+            if (!result.Succeeded)
+            {
+                return TypedResults.BadRequest(result.Errors.ToList());
+            }
+
+            await userManager.AddToRoleAsync(user, "User");
+
+            return TypedResults.Ok<UserRegisterResponse>(new(request.Email));
         });
     }
 }
