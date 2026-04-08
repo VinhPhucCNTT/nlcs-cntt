@@ -29,7 +29,7 @@ export default function RegisterPage() {
 
     if (status === 400 && Array.isArray(error?.response?.data)) {
       return error.response.data
-        .map((item: IIdentityError) => item.description)
+        .map((item: IIdentityError) => item.Description)
         .join(" ");
     }
 
@@ -61,7 +61,9 @@ export default function RegisterPage() {
           <Form.Item
             label="Full name"
             name="fullName"
-            rules={[{ required: true, message: "Please enter your full name." }]}
+            rules={[
+              { required: true, message: "Please enter your full name." },
+            ]}
           >
             <Input placeholder="Nguyen Van A" />
           </Form.Item>
@@ -105,7 +107,7 @@ export default function RegisterPage() {
                     return Promise.resolve();
                   }
                   return Promise.reject(
-                    new Error("Password confirmation does not match.")
+                    new Error("Password confirmation does not match."),
                   );
                 },
               }),

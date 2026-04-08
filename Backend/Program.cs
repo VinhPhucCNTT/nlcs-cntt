@@ -14,6 +14,17 @@ using Backend.Endpoints;
 
 var builder = WebApplication.CreateBuilder(args);
 
+builder.Services.AddCors(options =>
+{
+    options.AddPolicy(name: "allowFrontend",
+        policy =>
+        {
+            policy.WithOrigins("http://localhost:5173")
+                   .AllowAnyHeader()
+                   .AllowAnyMethod();
+        });
+});
+
 builder.Services.AddOpenApi();
 builder.Services.AddProblemDetails();
 
@@ -60,6 +71,8 @@ builder.Services
     .AddEntityFrameworkStores<AppDbContext>();
 
 var app = builder.Build();
+
+app.UseCors("allowFrontend");
 
 if (app.Environment.IsDevelopment())
 {

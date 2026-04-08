@@ -1,25 +1,25 @@
 export interface ILoginRequest {
-  email: string;
-  password: string;
+  Email: string;
+  Password: string;
 }
 
 export interface ILoginResponse {
-  email: string;
-  token: string;
+  Email: string;
+  Token: string;
 }
 
 export interface IRegisterRequest {
-  email: string;
-  fullName: string;
-  username: string;
-  password: string;
+  Email: string;
+  FullName: string;
+  Username: string;
+  Password: string;
 }
 
 export interface IRegisterResponse {
-  email: string;
+  Email: string;
 }
 
 export interface IIdentityError {
-  code: string;
-  description: string;
+  Code: string;
+  Description: string;
 }

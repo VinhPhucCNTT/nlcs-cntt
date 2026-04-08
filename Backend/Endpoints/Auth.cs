@@ -3,16 +3,15 @@ using Backend.Services;
 
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Http.HttpResults;
-using System.ComponentModel.DataAnnotations;
 
 namespace Backend.Endpoints;
 
 public static class AuthEndpoints
 {
-    public record UserLoginRequest([EmailAddress] string Email, string Password);
+    public record UserLoginRequest(string Email, string Password);
     public record UserLoginResponse(string Email, string Token);
 
-    public record UserRegisterRequest(string FullName, [EmailAddress] string Email, string Username, string Password); // Admin role is registered manually
+    public record UserRegisterRequest(string FullName, string Email, string Username, string Password); // Admin role is registered manually
     public record UserRegisterResponse(string Email);
 
     public static void AddAuthEndpoints(this IEndpointRouteBuilder app)

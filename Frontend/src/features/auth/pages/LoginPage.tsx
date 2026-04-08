@@ -14,7 +14,7 @@ export default function LoginPage() {
 
   const onFinish = async (values: ILoginRequest) => {
     const response = await login(values);
-    localStorage.setItem(LOGIN_TOKEN_KEY, response.token);
+    localStorage.setItem(LOGIN_TOKEN_KEY, response.Token);
     navigate("/courses");
   };
 
@@ -68,7 +68,7 @@ export default function LoginPage() {
 
           {error && (
             <Form.Item>
-              <Alert type="error" showIcon message={getErrorMessage()} />
+              <Alert type="error" showIcon title={getErrorMessage()} />
             </Form.Item>
           )}
 
