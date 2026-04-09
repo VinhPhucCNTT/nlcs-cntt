@@ -19,22 +19,32 @@ public static class AuthAdminEndpoints
     {
         var auth = app.MapGroup("api/auth");
 
-        auth.MapDelete("{email}", async Task<Results<Ok, BadRequest>> (string email, UserManager<ApplicationUser> userManager) =>
-        {
-            var user = await userManager.FindByEmailAsync(email);
-            if (user is null)
-                return TypedResults.BadRequest();
-
-            await userManager.DeleteAsync(user);
-            return TypedResults.Ok();
-        });
-
-        auth.MapGet("", async Task<List<AdminUserResponse>> (UserManager<ApplicationUser> userManager) =>
-        {
-            var list = userManager.Users.Select(u => new AdminUserResponse(u.Id, u.Email, u.UserName, u.FullName, u.CreatedAt));
-            return await list.ToListAsync();
-        });
-
-        auth.MapGet("check", async Task<Ok> () => TypedResults.Ok()).RequireAuthorization();
+        auth.MapDelete("{email}", HandleDeleteUser);
+        auth.MapGet("", HandleGetUsers);
+        auth.MapGet("check", HandleCheck).RequireAuthorization();
     }
+
+    private static async
+        Task<Results<Ok, BadRequest>>
+        HandleDeleteUser(
+            string email,
+            UserManager<ApplicationUser> userManager)
+    {
+        var user = await userManager.FindByEmailAsync(email);
+        if (user is null)
+            return TypedResults.BadRequest();
+
+        await userManager.DeleteAsync(user);
+        return TypedResults.Ok();
+    }
+
+    private static async
+        Task<List<AdminUserResponse>>
+        HandleGetUsers(UserManager<ApplicationUser> userManager)
+    {
+        var list = userManager.Users.Select(u => new AdminUserResponse(u.Id, u.Email, u.UserName, u.FullName, u.CreatedAt));
+        return await list.ToListAsync();
+    }
+
+    private static Ok HandleCheck() => TypedResults.Ok();
 }

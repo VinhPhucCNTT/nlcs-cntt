@@ -18,41 +18,53 @@ public static class AuthEndpoints
     {
         var auth = app.MapGroup("/api/auth");
 
-        auth.MapPost("login", async Task<Results<Ok<UserLoginResponse>, UnauthorizedHttpResult>> (UserLoginRequest request, UserManager<ApplicationUser> userManager, JwtService jwtService) =>
+        auth.MapPost("login", HandleLogin);
+        auth.MapPost("register", HandleRegister);
+    }
+
+    private static async
+        Task<Results<Ok<UserLoginResponse>, UnauthorizedHttpResult>>
+        HandleLogin(
+            UserLoginRequest request,
+            UserManager<ApplicationUser> userManager,
+            JwtService jwtService)
+    {
+        var user = await userManager.FindByEmailAsync(request.Email);
+        if (user is null)
+            return TypedResults.Unauthorized();
+
+        if (!await userManager.CheckPasswordAsync(user, request.Password))
+            return TypedResults.Unauthorized();
+
+        var token = await jwtService.GenerateToken(user);
+        return TypedResults.Ok<UserLoginResponse>(new(request.Email, token));
+    }
+
+    private static async 
+        Task<Results<Ok<UserRegisterResponse>, UnauthorizedHttpResult, BadRequest<List<IdentityError>>>>
+        HandleRegister(
+            UserRegisterRequest request,
+            UserManager<ApplicationUser> userManager)
+    {
+        var exist = await userManager.FindByEmailAsync(request.Email);
+        if (exist is not null)
+            return TypedResults.Unauthorized();
+
+        var user = new ApplicationUser
         {
-            var user = await userManager.FindByEmailAsync(request.Email);
-            if (user is null)
-                return TypedResults.Unauthorized();
+            FullName = request.FullName,
+            UserName = request.Username,
+            Email = request.Email
+        };
 
-            if (!await userManager.CheckPasswordAsync(user, request.Password))
-                return TypedResults.Unauthorized();
-
-            var token = await jwtService.GenerateToken(user);
-            return TypedResults.Ok<UserLoginResponse>(new(request.Email, token));
-        });
-
-        auth.MapPost("register", async Task<Results<Ok<UserRegisterResponse>, UnauthorizedHttpResult, BadRequest<List<IdentityError>>>> (UserRegisterRequest request, UserManager<ApplicationUser> userManager) =>
+        var result = await userManager.CreateAsync(user, request.Password);
+        if (!result.Succeeded)
         {
-            var exist = await userManager.FindByEmailAsync(request.Email);
-            if (exist is not null)
-                return TypedResults.Unauthorized();
+            return TypedResults.BadRequest(result.Errors.ToList());
+        }
 
-            var user = new ApplicationUser
-            {
-                FullName = request.FullName,
-                UserName = request.Username,
-                Email = request.Email
-            };
+        await userManager.AddToRoleAsync(user, "User");
 
-            var result = await userManager.CreateAsync(user, request.Password);
-            if (!result.Succeeded)
-            {
-                return TypedResults.BadRequest(result.Errors.ToList());
-            }
-
-            await userManager.AddToRoleAsync(user, "User");
-
-            return TypedResults.Ok<UserRegisterResponse>(new(request.Email));
-        });
+        return TypedResults.Ok<UserRegisterResponse>(new(request.Email));
     }
 }
