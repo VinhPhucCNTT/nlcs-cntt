@@ -1,5 +1,6 @@
 using Backend.Models.Courses;
 using Backend.Models.Users;
+using Backend.Models.Enums;
 
 namespace Backend.Models.Learning;
 

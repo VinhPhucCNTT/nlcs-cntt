@@ -1,4 +1,5 @@
 namespace Backend.Models.Assessments;
+using Backend.Models.Enums;
 
 public class Question
 {

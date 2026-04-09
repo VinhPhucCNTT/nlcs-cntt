@@ -1,4 +1,4 @@
-namespace Backend.Models.Learning;
+namespace Backend.Models.Enums;
 
 public enum EnrollmentStatus
 {

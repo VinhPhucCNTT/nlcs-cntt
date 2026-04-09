@@ -1,4 +1,4 @@
-namespace Backend.Models.Assessments;
+namespace Backend.Models.Enums;
 
 public enum QuestionType
 {
