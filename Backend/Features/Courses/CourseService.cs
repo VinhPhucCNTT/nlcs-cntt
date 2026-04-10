@@ -10,26 +10,26 @@ public sealed class CourseService(IDbContextFactory<AppDbContext> dbContextFator
     private readonly IDbContextFactory<AppDbContext> _dbContextFactory = dbContextFatory;
 
     // TODO: Use sqids to shorten courseId
-    public async Task<CourseDto?> GetCourseAsync(Guid courseId)
+    public async Task<CourseDto?> GetCourseAsync(Guid courseId, CancellationToken cancellationToken)
     {
-        using var dbContext = await _dbContextFactory.CreateDbContextAsync();
+        using var dbContext = await _dbContextFactory.CreateDbContextAsync(cancellationToken: cancellationToken);
 
-        var course = await dbContext.Courses.Include(c => c.Instructor).FirstOrDefaultAsync(c => c.Id == courseId);
+        var course = await dbContext.Courses.Include(c => c.Instructor).FirstOrDefaultAsync(c => c.Id == courseId, cancellationToken: cancellationToken);
         if (course is null)
             return null;
 
         return new CourseDto(course.Id, course.Title, course.Instructor.FullName);
     }
 
-    public async Task<QueryCoursesResponse> QueryCoursesAsync(QueryCoursesRequest query)
+    public async Task<QueryCoursesResponse> QueryCoursesAsync(QueryCoursesRequest query, CancellationToken cancellationToken)
     {
-        using var dbContext = await _dbContextFactory.CreateDbContextAsync();
+        using var dbContext = await _dbContextFactory.CreateDbContextAsync(cancellationToken: cancellationToken);
         var courses = dbContext.Courses.Include(c => c.Instructor).AsQueryable();
 
         if (!string.IsNullOrEmpty(query.Title))
             courses = courses.Where(c => c.Title.Contains(query.Title, StringComparison.OrdinalIgnoreCase));
 
-        var total = await courses.CountAsync();
+        var total = await courses.CountAsync(cancellationToken: cancellationToken);
 
         var items = await courses
               .Skip((query.PageIndex - 1) * query.PageSize)
@@ -40,7 +40,7 @@ public sealed class CourseService(IDbContextFactory<AppDbContext> dbContextFator
                   c.Title,
                   c.Instructor.FullName
               ))
-              .ToListAsync();
+              .ToListAsync(cancellationToken: cancellationToken);
 
         return new QueryCoursesResponse
         (
@@ -49,9 +49,9 @@ public sealed class CourseService(IDbContextFactory<AppDbContext> dbContextFator
         );
     }
 
-    public async Task<CourseDto> CreateCourseAsync(CreateCourseDto request, Guid creatorId)
+    public async Task<CourseDto> CreateCourseAsync(CreateCourseDto request, Guid creatorId, CancellationToken cancellationToken)
     {
-        using var dbContext = await _dbContextFactory.CreateDbContextAsync();
+        using var dbContext = await _dbContextFactory.CreateDbContextAsync(cancellationToken);
 
         var course = new Course
         {
@@ -63,17 +63,17 @@ public sealed class CourseService(IDbContextFactory<AppDbContext> dbContextFator
         };
 
         dbContext.Courses.Add(course);
-        await dbContext.SaveChangesAsync();
+        await dbContext.SaveChangesAsync(cancellationToken);
 
-        var courseAfter = await dbContext.Courses.Include(c => c.Instructor).FirstAsync(c => c.Id == course.Id);
+        var courseAfter = await dbContext.Courses.Include(c => c.Instructor).FirstAsync(c => c.Id == course.Id, cancellationToken: cancellationToken);
         return new CourseDto(courseAfter.Id, courseAfter.Title, courseAfter.Instructor.FullName);
     }
 
-    public async Task<CourseDto?> UpdateCourseAsync(Guid courseId, UpdateCourseDto request)
+    public async Task<CourseDto?> UpdateCourseAsync(Guid courseId, UpdateCourseDto request, CancellationToken cancellationToken)
     {
-        using var dbContext = await _dbContextFactory.CreateDbContextAsync();
+        using var dbContext = await _dbContextFactory.CreateDbContextAsync(cancellationToken);
 
-        var course = await dbContext.Courses.FirstOrDefaultAsync(c => c.Id == courseId);
+        var course = await dbContext.Courses.FirstOrDefaultAsync(c => c.Id == courseId, cancellationToken: cancellationToken);
         if (course is null)
             return null;
 
@@ -82,22 +82,22 @@ public sealed class CourseService(IDbContextFactory<AppDbContext> dbContextFator
         course.ThumbnailUrl = request.ThumbnailUrl;
         course.Status = request.Status;
 
-        await dbContext.SaveChangesAsync();
+        await dbContext.SaveChangesAsync(cancellationToken);
 
-        var courseAfter = await dbContext.Courses.Include(c => c.Instructor).FirstAsync(c => c.Id == course.Id);
+        var courseAfter = await dbContext.Courses.Include(c => c.Instructor).FirstAsync(c => c.Id == course.Id, cancellationToken: cancellationToken);
         return new CourseDto(courseAfter.Id, courseAfter.Title, courseAfter.Instructor.FullName);
     }
 
-    public async Task<bool> DeleteCourseAsync(Guid courseId)
+    public async Task<bool> DeleteCourseAsync(Guid courseId, CancellationToken cancellationToken)
     {
-        using var dbContext = await _dbContextFactory.CreateDbContextAsync();
+        using var dbContext = await _dbContextFactory.CreateDbContextAsync(cancellationToken);
 
-        var course = await dbContext.Courses.FirstOrDefaultAsync(c => c.Id == courseId);
+        var course = await dbContext.Courses.FirstOrDefaultAsync(c => c.Id == courseId, cancellationToken: cancellationToken);
         if (course is null)
             return false;
         
         dbContext.Courses.Remove(course);
-        await dbContext.SaveChangesAsync();
+        await dbContext.SaveChangesAsync(cancellationToken);
 
         return true;
     }

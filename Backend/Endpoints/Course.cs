@@ -20,9 +20,9 @@ public static class CourseEndpoints
 
     private static async
         Task<Results<Ok<CourseDto>, BadRequest>>
-        HandleGet(Guid courseId, ICourseService courseService)
+        HandleGet(Guid courseId, ICourseService courseService, CancellationToken cancellationToken)
     {
-        var result = await courseService.GetCourseAsync(courseId);
+        var result = await courseService.GetCourseAsync(courseId, cancellationToken);
         if (result is null)
             return TypedResults.BadRequest();
         return TypedResults.Ok(result);
@@ -30,28 +30,28 @@ public static class CourseEndpoints
 
     private static async
         Task<Ok<QueryCoursesResponse>>
-        HandleQuery(QueryCoursesRequest request, ICourseService courseService)
+        HandleQuery(QueryCoursesRequest request, ICourseService courseService, CancellationToken cancellationToken)
     {
-        var results = await courseService.QueryCoursesAsync(request);
+        var results = await courseService.QueryCoursesAsync(request, cancellationToken);
         return TypedResults.Ok(results);
     }
 
     private static async
         Task<Results<Ok<CourseDto>, BadRequest>>
-        HandleCreate(CreateCourseDto request, ClaimsPrincipal user, ICourseService courseService)
+        HandleCreate(CreateCourseDto request, ClaimsPrincipal user, ICourseService courseService, CancellationToken cancellationToken)
     {
     if (!user.GetUserId(out var userId))
         return TypedResults.BadRequest();
 
-    var result = await courseService.CreateCourseAsync(request, userId);
+    var result = await courseService.CreateCourseAsync(request, userId, cancellationToken);
     return TypedResults.Ok(result);
     }
 
     private static async
         Task<Results<Ok<CourseDto>, BadRequest>>
-        HandleUpdate(Guid courseId, UpdateCourseDto request, ICourseService courseService)
+        HandleUpdate(Guid courseId, UpdateCourseDto request, ICourseService courseService, CancellationToken cancellationToken)
     {
-        var result = await courseService.UpdateCourseAsync(courseId, request);
+        var result = await courseService.UpdateCourseAsync(courseId, request, cancellationToken);
         if (result is null)
             return TypedResults.BadRequest();
         return TypedResults.Ok(result);
@@ -59,9 +59,9 @@ public static class CourseEndpoints
 
     private static async
         Task<Results<Ok, BadRequest>>
-        HandleDelete(Guid courseId, ICourseService courseService)
+        HandleDelete(Guid courseId, ICourseService courseService, CancellationToken cancellationToken)
     {
-        if (!await courseService.DeleteCourseAsync(courseId))
+        if (!await courseService.DeleteCourseAsync(courseId, cancellationToken))
             return TypedResults.BadRequest();
         return TypedResults.Ok();
     }
