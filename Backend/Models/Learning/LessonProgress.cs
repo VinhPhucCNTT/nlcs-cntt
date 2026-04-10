@@ -1,12 +1,11 @@
+using Backend.Models;
 using Backend.Models.Users;
 using Backend.Models.Courses;
 
 namespace Backend.Models.Learning;
 
-public class LessonProgress
+public class LessonProgress : BaseEntity
 {
-    public Guid Id { get; set; }
-
     public Guid UserId { get; set; }
     public ApplicationUser User { get; set; } = default!;
 

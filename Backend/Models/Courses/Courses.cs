@@ -1,21 +1,18 @@
+using Backend.Models;
 using Backend.Models.Learning;
 using Backend.Models.Users;
 using Backend.Models.Enums;
 
 namespace Backend.Models.Courses;
 
-public class Course
+public class Course : BaseEntity
 {
-    public Guid Id { get; set; }
-
     public string Title { get; set; } = default!;
     public string Description { get; set; } = default!;
     public string? ThumbnailUrl { get; set; }
 
     public Guid InstructorId { get; set; }
     public ApplicationUser Instructor { get; set; } = default!;
-
-    public decimal Price { get; set; }
 
     public CourseStatus Status { get; set; }
 

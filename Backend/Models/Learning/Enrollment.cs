@@ -1,13 +1,12 @@
+using Backend.Models;
 using Backend.Models.Courses;
 using Backend.Models.Users;
 using Backend.Models.Enums;
 
 namespace Backend.Models.Learning;
 
-public class Enrollment
+public class Enrollment : BaseEntity
 {
-    public Guid Id { get; set; }
-
     public Guid UserId { get; set; }
     public ApplicationUser User { get; set; } = default!;
 

@@ -1,13 +1,12 @@
+using Backend.Models;
 using Backend.Models.Assessments;
 using Backend.Models.Learning;
 using Backend.Models.Enums;
 
 namespace Backend.Models.Courses;
 
-public class Lesson
+public class Lesson : BaseEntity
 {
-    public Guid Id { get; set; }
-
     public Guid SectionId { get; set; }
     public Section Section { get; set; } = default!;
 

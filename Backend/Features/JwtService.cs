@@ -5,7 +5,7 @@ using Backend.Models.Users;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.AspNetCore.Identity;
 
-namespace Backend.Services;
+namespace Backend.Features;
 
 public class JwtService(IConfiguration config, UserManager<ApplicationUser> userManager)
 {

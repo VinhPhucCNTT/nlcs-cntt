@@ -1,10 +1,10 @@
-namespace Backend.Models.Assessments;
+using Backend.Models;
 using Backend.Models.Enums;
 
-public class Question
-{
-    public Guid Id { get; set; }
+namespace Backend.Models.Assessments;
 
+public class Question : BaseEntity
+{
     public Guid QuizId { get; set; }
     public Quiz Quiz { get; set; } = default!;
 

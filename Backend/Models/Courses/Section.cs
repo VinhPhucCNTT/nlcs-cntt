@@ -1,9 +1,9 @@
+using Backend.Models;
+
 namespace Backend.Models.Courses;
 
-public class Section
+public class Section : BaseEntity
 {
-    public Guid Id { get; set; }
-
     public Guid CourseId { get; set; }
     public Course Course { get; set; } = default!;
 

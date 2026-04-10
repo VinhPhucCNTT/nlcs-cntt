@@ -6,6 +6,7 @@ using Backend.Models.Users;
 using Backend.Models.Courses;
 using Backend.Models.Learning;
 using Backend.Models.Assessments;
+using Backend.Models;
 
 namespace Backend.Data;
 
@@ -31,12 +32,38 @@ public class AppDbContext
     {
         base.OnModelCreating(builder);
 
+        // Soft delete
+        builder.Entity<Course>().HasQueryFilter(c => !c.IsDeleted);
+        builder.Entity<Section>().HasQueryFilter(s => !s.IsDeleted);
+        builder.Entity<Lesson>().HasQueryFilter(l => !l.IsDeleted);
+        builder.Entity<Quiz>().HasQueryFilter(q => !q.IsDeleted);
+        builder.Entity<Question>().HasQueryFilter(q => !q.IsDeleted);
+        builder.Entity<Answer>().HasQueryFilter(a => !a.IsDeleted);
+        builder.Entity<QuizAttempt>().HasQueryFilter(qa => !qa.IsDeleted);
+
         builder.Entity<Enrollment>()
+            .HasQueryFilter(e => !e.IsDeleted)
             .HasIndex(e => new { e.UserId, e.CourseId })
             .IsUnique();
 
         builder.Entity<LessonProgress>()
+            .HasQueryFilter(p => !p.IsDeleted)
             .HasIndex(p => new { p.UserId, p.LessonId })
             .IsUnique();
+    }
+
+    public override async Task<int> SaveChangesAsync(CancellationToken cancellationToken = default)
+    {
+        foreach (var entry in ChangeTracker.Entries<BaseEntity>())
+        {
+            if (entry.State == EntityState.Deleted)
+            {
+                entry.State = EntityState.Modified;
+                entry.Entity.IsDeleted = true;
+                entry.Entity.DeletedAt = DateTime.UtcNow;
+            }
+        }
+
+        return await base.SaveChangesAsync(cancellationToken);
     }
 }

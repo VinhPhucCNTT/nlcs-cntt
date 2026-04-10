@@ -2,7 +2,7 @@ using System.Text;
 
 using Backend.Data;
 using Backend.Models.Users;
-using Backend.Services;
+using Backend.Features;
 using Backend.Helpers;
 using Backend.Endpoints;
 
@@ -11,6 +11,7 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using Scalar.AspNetCore;
+using Backend.Features.Courses;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -70,6 +71,9 @@ builder.Services
     .AddDefaultTokenProviders()
     .AddEntityFrameworkStores<AppDbContext>();
 
+// Add services
+builder.Services.AddScoped<ICourseService, CourseService>();
+
 var app = builder.Build();
 
 app.UseCors("allowFrontend");
@@ -82,11 +86,12 @@ if (app.Environment.IsDevelopment())
     await app.SeedRolesAsync();
 }
 
-
 app.UseAuthentication();
 app.UseAuthorization();
 
 app.UseHttpsRedirection();
+
+app.UseMiddleware<ExceptionMiddleware>();
 
 // Map endpoints
 app.AddAuthEndpoints();

@@ -1,11 +1,10 @@
+using Backend.Models;
 using Backend.Models.Courses;
 
 namespace Backend.Models.Assessments;
 
-public class Quiz
+public class Quiz : BaseEntity
 {
-    public Guid Id { get; set; }
-
     public Guid LessonId { get; set; }
     public Lesson Lesson { get; set; } = default!;
 

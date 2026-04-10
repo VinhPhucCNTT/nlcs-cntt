@@ -1,11 +1,10 @@
+using Backend.Models;
 using Backend.Models.Users;
 
 namespace Backend.Models.Assessments;
 
-public class QuizAttempt
+public class QuizAttempt : BaseEntity
 {
-    public Guid Id { get; set; }
-
     public Guid UserId { get; set; }
     public ApplicationUser User { get; set; } = default!;
 
