@@ -15,6 +15,9 @@ using Backend.Features.Courses;
 
 var builder = WebApplication.CreateBuilder(args);
 
+builder.Services.AddProblemDetails();
+builder.Services.AddExceptionHandler<GlobalExceptionHandler>();
+
 builder.Services.AddCors(options =>
 {
     options.AddPolicy(name: "allowFrontend",
@@ -27,7 +30,6 @@ builder.Services.AddCors(options =>
 });
 
 builder.Services.AddOpenApi();
-builder.Services.AddProblemDetails();
 
 builder.Services.AddAuthorization();
 builder.Services.AddScoped<JwtService>();
@@ -90,8 +92,6 @@ app.UseAuthentication();
 app.UseAuthorization();
 
 app.UseHttpsRedirection();
-
-app.UseMiddleware<ExceptionMiddleware>();
 
 // Map endpoints
 app.AddAuthEndpoints();
