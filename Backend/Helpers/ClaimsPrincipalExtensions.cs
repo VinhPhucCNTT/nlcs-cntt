@@ -6,7 +6,7 @@ public static class ClaimsPrincipalExtensions
 {
     public static bool GetUserId(this ClaimsPrincipal user, out Guid userId)
     {
-        var value = user.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier)?.Value;
+        var value = user.FindFirst(ClaimTypes.NameIdentifier)?.Value;
         return Guid.TryParse(value, out userId);
     }
 }
