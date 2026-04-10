@@ -12,8 +12,12 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using Scalar.AspNetCore;
 using Backend.Features.Courses;
+using FluentValidation;
 
 var builder = WebApplication.CreateBuilder(args);
+
+// Automatically register validators
+builder.Services.AddValidatorsFromAssemblyContaining<Program>();
 
 builder.Services.AddProblemDetails();
 builder.Services.AddExceptionHandler<GlobalExceptionHandler>();

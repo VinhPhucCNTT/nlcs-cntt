@@ -1,6 +1,7 @@
 using System.Security.Claims;
 using Backend.Features.Courses;
 using Backend.Helpers;
+using FluentValidation;
 using Microsoft.AspNetCore.Http.HttpResults;
 
 namespace Backend.Endpoints;
@@ -29,28 +30,54 @@ public static class CourseEndpoints
     }
 
     private static async
-        Task<Ok<QueryCoursesResponse>>
-        HandleQuery(QueryCoursesRequest request, ICourseService courseService, CancellationToken cancellationToken)
+        Task<Results<Ok<QueryCoursesResponse>, ValidationProblem>>
+        HandleQuery(
+            QueryCoursesRequest request,
+            ICourseService courseService,
+            IValidator<QueryCoursesRequest> validator,
+            CancellationToken cancellationToken)
     {
+        var validationResult = await validator.ValidateAsync(request, cancellationToken);
+        if (!validationResult.IsValid)
+            return TypedResults.ValidationProblem(validationResult.ToDictionary());
+
         var results = await courseService.QueryCoursesAsync(request, cancellationToken);
         return TypedResults.Ok(results);
     }
 
     private static async
-        Task<Results<Ok<CourseDto>, BadRequest>>
-        HandleCreate(CreateCourseDto request, ClaimsPrincipal user, ICourseService courseService, CancellationToken cancellationToken)
+        Task<Results<Ok<CourseDto>, BadRequest, ValidationProblem>>
+        HandleCreate(
+            CreateCourseDto request,
+            ClaimsPrincipal user,
+            ICourseService courseService,
+            IValidator<CreateCourseDto> validator,
+            CancellationToken cancellationToken)
     {
-    if (!user.GetUserId(out var userId))
-        return TypedResults.BadRequest();
+        var validationResult = await validator.ValidateAsync(request, cancellationToken);
+        if (!validationResult.IsValid)
+            return TypedResults.ValidationProblem(validationResult.ToDictionary());
 
-    var result = await courseService.CreateCourseAsync(request, userId, cancellationToken);
-    return TypedResults.Ok(result);
+        if (!user.GetUserId(out var userId))
+            return TypedResults.BadRequest();
+
+        var result = await courseService.CreateCourseAsync(request, userId, cancellationToken);
+        return TypedResults.Ok(result);
     }
 
     private static async
-        Task<Results<Ok<CourseDto>, BadRequest>>
-        HandleUpdate(Guid courseId, UpdateCourseDto request, ICourseService courseService, CancellationToken cancellationToken)
+        Task<Results<Ok<CourseDto>, BadRequest, ValidationProblem>>
+        HandleUpdate(
+            Guid courseId,
+            UpdateCourseDto request,
+            ICourseService courseService,
+            IValidator<UpdateCourseDto> validator,
+            CancellationToken cancellationToken)
     {
+        var validationResult = await validator.ValidateAsync(request, cancellationToken);
+        if (!validationResult.IsValid)
+            return TypedResults.ValidationProblem(validationResult.ToDictionary());
+
         var result = await courseService.UpdateCourseAsync(courseId, request, cancellationToken);
         if (result is null)
             return TypedResults.BadRequest();
@@ -58,8 +85,11 @@ public static class CourseEndpoints
     }
 
     private static async
-        Task<Results<Ok, BadRequest>>
-        HandleDelete(Guid courseId, ICourseService courseService, CancellationToken cancellationToken)
+        Task<Results<Ok, BadRequest, ValidationProblem>>
+        HandleDelete(
+            Guid courseId,
+			ICourseService courseService,
+			CancellationToken cancellationToken)
     {
         if (!await courseService.DeleteCourseAsync(courseId, cancellationToken))
             return TypedResults.BadRequest();
