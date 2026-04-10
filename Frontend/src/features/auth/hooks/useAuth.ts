@@ -15,8 +15,10 @@ export const useLogin = () =>
   });
 
 export const useRegister = () =>
-  useMutation<IRegisterResponse, AxiosError<IIdentityError[]>, IRegisterRequest>(
-    {
-      mutationFn: register,
-    }
-  );
+  useMutation<
+    IRegisterResponse,
+    AxiosError<IIdentityError[]>,
+    IRegisterRequest
+  >({
+    mutationFn: register,
+  });
