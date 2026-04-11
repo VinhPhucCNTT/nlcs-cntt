@@ -3,6 +3,8 @@ using Backend.Features;
 
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Http.HttpResults;
+using Microsoft.EntityFrameworkCore;
+using Backend.Data;
 
 namespace Backend.Endpoints;
 
@@ -44,8 +46,12 @@ public static class AuthEndpoints
         Task<Results<Ok<UserRegisterResponse>, UnauthorizedHttpResult, BadRequest<List<IdentityError>>>>
         HandleRegister(
             UserRegisterRequest request,
+            IDbContextFactory<AppDbContext> contextFactory,
             UserManager<ApplicationUser> userManager)
     {
+        var dbContext = await contextFactory.CreateDbContextAsync();
+        using var transaction = await dbContext.Database.BeginTransactionAsync();
+
         var exist = await userManager.FindByEmailAsync(request.Email);
         if (exist is not null)
             return TypedResults.Unauthorized();
@@ -64,6 +70,8 @@ public static class AuthEndpoints
         }
 
         await userManager.AddToRoleAsync(user, "User");
+
+        await transaction.CommitAsync();
 
         return TypedResults.Ok<UserRegisterResponse>(new(request.Email));
     }
