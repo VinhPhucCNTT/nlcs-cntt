@@ -29,7 +29,7 @@ export default function RegisterPage() {
 
     if (status === 400 && Array.isArray(error?.response?.data)) {
       return error.response.data
-        .map((item: IIdentityError) => item.Description)
+        .map((item: IIdentityError) => item.description)
         .join(" ");
     }
 

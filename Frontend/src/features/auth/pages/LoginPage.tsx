@@ -16,8 +16,8 @@ export default function LoginPage() {
 
     const onFinish = async (values: ILoginRequest) => {
         const response = await loginMutation(values);
-        login(response.Token);
-        localStorage.setItem(LOGIN_TOKEN_KEY, response.Token);
+        login(response.token);
+        localStorage.setItem(LOGIN_TOKEN_KEY, response.token);
         navigate("/courses");
     };
 
