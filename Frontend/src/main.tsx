@@ -3,7 +3,7 @@ import App from "./app/App";
 import Providers from "./app/providers";
 
 ReactDOM.createRoot(document.getElementById("root")!).render(
-  <Providers>
-    <App />
-  </Providers>,
+    <Providers>
+        <App />
+    </Providers>,
 );
