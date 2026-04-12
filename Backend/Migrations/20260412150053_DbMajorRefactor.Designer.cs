@@ -3,6 +3,7 @@ using System;
 using Backend.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
@@ -11,9 +12,11 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace Backend.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    partial class AppDbContextModelSnapshot : ModelSnapshot
+    [Migration("20260412150053_DbMajorRefactor")]
+    partial class DbMajorRefactor
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -693,7 +696,8 @@ namespace Backend.Migrations
                     b.HasOne("Backend.Models.Courses.CourseActivity", "Activity")
                         .WithOne("Assessment")
                         .HasForeignKey("Backend.Models.Assessments.Assessment", "ActivityId")
-                        .OnDelete(DeleteBehavior.Cascade);
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
 
                     b.Navigation("Activity");
                 });
@@ -707,7 +711,8 @@ namespace Backend.Migrations
                     b.HasOne("Backend.Models.Assessments.Assessment", "Assessment")
                         .WithMany()
                         .HasForeignKey("AssessmentId")
-                        .OnDelete(DeleteBehavior.Cascade);
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
 
                     b.HasOne("Backend.Models.Users.ApplicationUser", "Student")
                         .WithMany()
@@ -725,7 +730,8 @@ namespace Backend.Migrations
                     b.HasOne("Backend.Models.Assessments.Assessment", "Assessment")
                         .WithMany("Questions")
                         .HasForeignKey("AssessmentId")
-                        .OnDelete(DeleteBehavior.Cascade);
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
 
                     b.Navigation("Assessment");
                 });
@@ -765,7 +771,8 @@ namespace Backend.Migrations
                     b.HasOne("Backend.Models.Courses.CourseActivity", "Activity")
                         .WithOne("Assignment")
                         .HasForeignKey("Backend.Models.Assignments.Assignment", "ActivityId")
-                        .OnDelete(DeleteBehavior.Cascade);
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
 
                     b.Navigation("Activity");
                 });
@@ -779,7 +786,8 @@ namespace Backend.Migrations
                     b.HasOne("Backend.Models.Assignments.Assignment", "Assignment")
                         .WithMany()
                         .HasForeignKey("AssignmentId")
-                        .OnDelete(DeleteBehavior.Cascade);
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
 
                     b.HasOne("Backend.Models.Users.ApplicationUser", "Student")
                         .WithMany()
@@ -801,7 +809,8 @@ namespace Backend.Migrations
                     b.HasOne("Backend.Models.Users.ApplicationUser", "Instructor")
                         .WithMany()
                         .HasForeignKey("InstructorId")
-                        .OnDelete(DeleteBehavior.Restrict);
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
 
                     b.Navigation("Instructor");
                 });
@@ -826,7 +835,8 @@ namespace Backend.Migrations
                     b.HasOne("Backend.Models.Courses.Course", "Course")
                         .WithMany("Enrollments")
                         .HasForeignKey("CourseId")
-                        .OnDelete(DeleteBehavior.Cascade);
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
 
                     b.HasOne("Backend.Models.Users.ApplicationUser", "User")
                         .WithMany()
@@ -844,7 +854,8 @@ namespace Backend.Migrations
                     b.HasOne("Backend.Models.Courses.Course", "Course")
                         .WithMany("Modules")
                         .HasForeignKey("CourseId")
-                        .OnDelete(DeleteBehavior.Cascade);
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
 
                     b.Navigation("Course");
                 });

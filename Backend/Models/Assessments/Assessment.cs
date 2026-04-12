@@ -4,7 +4,7 @@ using Backend.Models.Enums;
 
 namespace Backend.Models.Assessments;
 
-public class Assessment : BaseEntity
+public class Assessment : BaseEntity, ISoftDeletable
 {
     public Guid ActivityId { get; set; }
 
@@ -23,4 +23,6 @@ public class Assessment : BaseEntity
     public bool ShuffleQuestions { get; set; }
 
     public ICollection<AssessmentQuestion> Questions { get; set; } = [];
+
+    public bool IsDeleted { get; set; } = false;
 }

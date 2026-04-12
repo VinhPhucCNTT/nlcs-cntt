@@ -21,6 +21,7 @@ public class CourseEnrollmentConfiguration : IEntityTypeConfiguration<CourseEnro
 
         builder.HasOne(x => x.Course)
             .WithMany(x => x.Enrollments)
+            .IsRequired(false)
             .HasForeignKey(x => x.CourseId);
     }
 }

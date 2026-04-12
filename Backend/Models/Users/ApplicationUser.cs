@@ -1,6 +1,7 @@
+using Backend.Models.Assessments;
+using Backend.Models.Assignments;
 using Backend.Models.Courses;
 using Microsoft.AspNetCore.Identity;
-using Backend.Models.Learning;
 
 namespace Backend.Models.Users;
 
@@ -12,6 +13,8 @@ public class ApplicationUser : IdentityUser<Guid>
     public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
 
     // Navigation
-    public ICollection<Enrollment> Enrollments { get; set; } = [];
     public ICollection<Course> CreatedCourses { get; set; } = [];
+    public ICollection<CourseEnrollment> CourseEnrollments { get; set; } = [];
+    public ICollection<AssessmentAttempt> AssessmentAttempts { get; set; } = [];
+    public ICollection<AssignmentSubmission> AssignmentSubmissions { get; set; } = [];
 }

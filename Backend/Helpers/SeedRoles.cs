@@ -10,7 +10,7 @@ public static class SeedRolesExtension
 
         var roleManager = scope.ServiceProvider.GetRequiredService<RoleManager<IdentityRole<Guid>>>();
 
-        string[] roles = ["Admin", "User"];
+        string[] roles = ["Admin", "Instructor", "Student"];
 
         foreach (var role in roles)
         {

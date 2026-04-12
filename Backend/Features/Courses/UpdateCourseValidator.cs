@@ -21,10 +21,6 @@ public class UpdateCourseValidator : AbstractValidator<UpdateCourseDto>
             .Must(BeAValidImageUrl)
             .When(c => !string.IsNullOrEmpty(c.ThumbnailUrl))
             .WithMessage("ThumbnailUrl must be a valid URL.");
-
-        RuleFor(c => c.Status)
-            .IsInEnum()
-            .WithMessage("Status must be a valid enum.");
     }
 
     private static bool BeAValidUrl(string url)

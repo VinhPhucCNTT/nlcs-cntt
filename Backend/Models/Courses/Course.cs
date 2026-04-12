@@ -3,11 +3,11 @@ using Backend.Models.Common;
 
 namespace Backend.Models.Courses;
 
-public class Course : BaseEntity
+public class Course : BaseEntity, ISoftDeletable
 {
     public string Title { get; set; } = null!;
 
-    public string Description { get; set; } = null!;
+    public string? Description { get; set; }
 
     public string? ThumbnailUrl { get; set; }
 
@@ -20,4 +20,6 @@ public class Course : BaseEntity
     public ICollection<CourseModule> Modules { get; set; } = [];
 
     public ICollection<CourseEnrollment> Enrollments { get; set; } = [];
+
+    public bool IsDeleted { get; set; } = false;
 }
