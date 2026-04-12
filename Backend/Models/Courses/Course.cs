@@ -22,4 +22,6 @@ public class Course : BaseEntity, ISoftDeletable
     public ICollection<CourseEnrollment> Enrollments { get; set; } = [];
 
     public bool IsDeleted { get; set; } = false;
+
+    public DateTime? DeletedAt { get; set; }
 }

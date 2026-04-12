@@ -18,4 +18,6 @@ public class Assignment : BaseEntity, ISoftDeletable
     public decimal MaxPoints { get; set; }
 
     public bool IsDeleted { get; set; } = false;
+
+    public DateTime? DeletedAt { get; set; }
 }

@@ -25,4 +25,6 @@ public class Assessment : BaseEntity, ISoftDeletable
     public ICollection<AssessmentQuestion> Questions { get; set; } = [];
 
     public bool IsDeleted { get; set; } = false;
+
+    public DateTime? DeletedAt { get; set; }
 }
