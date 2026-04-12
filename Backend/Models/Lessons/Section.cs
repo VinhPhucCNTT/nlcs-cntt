@@ -1,6 +1,7 @@
-using Backend.Models;
+using Backend.Models.Courses;
+using Backend.Models.Common;
 
-namespace Backend.Models.Courses;
+namespace Backend.Models.Lessons;
 
 public class Section : BaseEntity
 {

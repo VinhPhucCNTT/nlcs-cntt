@@ -2,7 +2,7 @@ namespace Backend.Models.Enums;
 
 public enum EnrollmentStatus
 {
-    Active = 0,
-    Completed = 1,
-    Cancelled = 2
+    Active,
+    Completed,
+    Dropped
 }
