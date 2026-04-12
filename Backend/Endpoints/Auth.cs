@@ -46,10 +46,9 @@ public static class AuthEndpoints
         Task<Results<Ok<UserRegisterResponse>, UnauthorizedHttpResult, BadRequest<List<IdentityError>>>>
         HandleRegister(
             UserRegisterRequest request,
-            IDbContextFactory<AppDbContext> contextFactory,
+            AppDbContext dbContext,
             UserManager<ApplicationUser> userManager)
     {
-        var dbContext = await contextFactory.CreateDbContextAsync();
         using var transaction = await dbContext.Database.BeginTransactionAsync();
 
         var exist = await userManager.FindByEmailAsync(request.Email);
