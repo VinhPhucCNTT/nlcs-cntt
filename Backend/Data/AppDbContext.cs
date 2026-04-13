@@ -50,4 +50,9 @@ public class AppDbContext : IdentityDbContext<ApplicationUser, IdentityRole<Guid
 
         return await base.SaveChangesAsync(cancellationToken);
     }
+
+    public async Task<int> SaveHardChangesAsync(CancellationToken cancellationToken = default)
+    {
+        return await base.SaveChangesAsync(cancellationToken);
+    }
 }

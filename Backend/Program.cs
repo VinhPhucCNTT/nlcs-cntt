@@ -11,8 +11,13 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using Scalar.AspNetCore;
-using Backend.Features.Courses;
 using FluentValidation;
+
+using Backend.Features.Courses.Services;
+using Backend.Features.Modules.Services;
+using Backend.Features.Activities.Services;
+using Backend.Features.Assessments.Services;
+using Backend.Features.Assignments.Services;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -83,6 +88,10 @@ builder.Services
 
 // Add services
 builder.Services.AddScoped<ICourseService, CourseService>();
+builder.Services.AddScoped<IModuleService, ModuleService>();
+builder.Services.AddScoped<IActivityService, ActivityService>();
+builder.Services.AddScoped<IAssessmentService, AssessmentService>();
+builder.Services.AddScoped<IAssignmentService, AssignmentService>();
 
 var app = builder.Build();
 

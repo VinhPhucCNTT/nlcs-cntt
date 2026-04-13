@@ -8,4 +8,9 @@ public class UnitOfWork(AppDbContext db) : IUnitOfWork
     {
         return _db.SaveChangesAsync(ct);
     }
+
+    public Task<int> SaveHardChangesAsync(CancellationToken ct = default)
+    {
+        return _db.SaveHardChangesAsync(ct);
+    }
 }

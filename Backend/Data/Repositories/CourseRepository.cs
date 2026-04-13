@@ -3,20 +3,23 @@ using Microsoft.EntityFrameworkCore;
 
 namespace Backend.Data.Repositories;
 
-public class CourseRepository : ICourseRepository
+public class CourseRepository(AppDbContext db) : ICourseRepository
 {
-    private readonly AppDbContext _db;
-
-    public CourseRepository(AppDbContext db)
-    {
-        _db = db;
-    }
+    private readonly AppDbContext _db = db;
 
     public async Task<Course?> GetByIdAsync(Guid id)
     {
         return await _db.Courses
             .Include(x => x.Modules)
+            .Include(x => x.Instructor)
             .FirstOrDefaultAsync(x => x.Id == id);
+    }
+
+    public async Task<Course?> GetDeletedByIdAsync(Guid id)
+    {
+        return await _db.Courses
+            .IgnoreQueryFilters()
+            .FirstOrDefaultAsync(x => x.Id == id && x.IsDeleted);
     }
 
     public async Task<List<Course>> GetAllAsync()
@@ -37,6 +40,21 @@ public class CourseRepository : ICourseRepository
     public void Remove(Course course)
     {
         _db.Courses.Remove(course);
+    }
+
+    public void Restore(Course course)
+    {
+        course.IsDeleted = false;
+        course.DeletedAt = null;
+
+        _db.Courses.Update(course);
+    }
+
+    public void HardDelete(Course course)
+    {
+        _db.Courses.IgnoreQueryFilters();
+
+        _db.Entry(course).State = EntityState.Deleted;
     }
 
     public async Task<bool> ExistsAsync(Guid id)
