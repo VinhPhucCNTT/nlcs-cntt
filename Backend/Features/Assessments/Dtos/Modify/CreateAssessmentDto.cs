@@ -1,8 +1,8 @@
 using Backend.Models.Enums;
 
-namespace Backend.Features.Assessments.Dtos;
+namespace Backend.Features.Assessments.Dtos.Modify;
 
-public record UpdateAssessmentDto(
+public record CreateAssessmentDto(
     AssessmentType Type,
     int TimeLimitMinutes,
     int MaxAttempts,

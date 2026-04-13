@@ -1,8 +1,8 @@
 namespace Backend.Features.Assignments.Dtos;
 
-public record CreateAssignmentDto(
+public record ViewAssignmentDto(
+    Guid Id,
     string Instructions,
-    DateTime? DueDate,
-    bool AllowLateSubmission,
+    DateTime DueDate,
     decimal MaxPoints
 );

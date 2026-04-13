@@ -10,6 +10,10 @@ public interface ICourseService
 
     Task<List<ViewCourseDto>> GetAllAsync();
 
+    Task<List<ViewCourseDto>> GetInstructorCoursesAsync(Guid instructorId);
+
+    Task<CourseContentDto> GetFullCourseContentAsync(Guid courseId);
+
     Task<bool> UpdateAsync(Guid id, UpdateCourseDto dto);
 
     Task<bool> DeleteAsync(Guid id);

@@ -3,7 +3,6 @@ using Backend.Features;
 
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Http.HttpResults;
-using Microsoft.EntityFrameworkCore;
 using Backend.Data;
 
 namespace Backend.Endpoints;
