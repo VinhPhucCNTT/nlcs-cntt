@@ -8,7 +8,7 @@ public interface IAssessmentAttemptRepository
 
     Task<List<AssessmentAttempt>> GetByStudentIdAsync(Guid studentId);
 
-    Task AddAsync(AssessmentAttempt attempt);
+    void AddAsync(AssessmentAttempt attempt);
 
     void Update(AssessmentAttempt attempt);
 }

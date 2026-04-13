@@ -10,7 +10,7 @@ public interface IModuleRepository
 
     Task<int> CountModulesAsync(Course course);
 
-    Task AddAsync(CourseModule module);
+    void Add(CourseModule module);
 
     void Update(CourseModule module);
 

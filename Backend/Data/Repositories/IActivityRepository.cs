@@ -10,7 +10,7 @@ public interface IActivityRepository
 
     Task<int> CountActivitiesAsync(CourseModule module);
 
-    Task AddAsync(CourseActivity activity);
+    void Add(CourseActivity activity);
 
     void Update(CourseActivity activity);
 

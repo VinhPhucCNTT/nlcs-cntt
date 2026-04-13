@@ -22,6 +22,13 @@ public class CourseRepository(AppDbContext db) : ICourseRepository
             .FirstOrDefaultAsync(x => x.Id == id && x.IsDeleted);
     }
 
+    public async Task<int> CountEnrollmentsAsync(Course course)
+    {
+        return await _db.CourseEnrollments
+            .Where(e => e.CourseId == course.Id)
+            .CountAsync();
+    }
+
     public async Task<List<Course>> GetAllAsync()
     {
         return await _db.Courses.ToListAsync();

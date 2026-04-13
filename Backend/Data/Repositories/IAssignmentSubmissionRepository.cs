@@ -8,7 +8,7 @@ public interface IAssignmentSubmissionRepository
 
     Task<List<AssignmentSubmission>> GetByAssignmentIdAsync(Guid assignmentId);
 
-    Task AddAsync(AssignmentSubmission submission);
+    void Add(AssignmentSubmission submission);
 
     void Update(AssignmentSubmission submission);
 }
