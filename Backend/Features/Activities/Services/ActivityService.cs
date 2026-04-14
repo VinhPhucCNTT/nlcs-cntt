@@ -24,7 +24,7 @@ public class ActivityService(
             OrderIndex = dto.OrderIndex
         };
 
-        await _activityRepo.AddAsync(activity);
+        _activityRepo.Add(activity);
 
         await _uow.SaveChangesAsync();
 

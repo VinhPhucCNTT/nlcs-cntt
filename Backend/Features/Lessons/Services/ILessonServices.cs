@@ -8,7 +8,7 @@ public interface ILessonService
 
     Task<ViewLessonDto?> GetByIdAsync(Guid id);
 
-    Task UpdateAsync(Guid id, UpdateLessonDto dto);
+    Task<bool> UpdateAsync(Guid id, UpdateLessonDto dto);
 
-    Task DeleteAsync(Guid id);
+    Task<bool> DeleteAsync(Guid id);
 }
