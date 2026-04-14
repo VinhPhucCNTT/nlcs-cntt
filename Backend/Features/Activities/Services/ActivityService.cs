@@ -38,11 +38,9 @@ public class ActivityService(
         return activities.Select(x =>
             new ViewActivityDto(
                 x.Id,
-                x.ModuleId,
                 x.Title,
                 x.Type,
                 x.OrderIndex,
-                x.IsPublished,
                 x.AvailableFrom,
                 x.AvailableUntil
             )).ToList();

@@ -1,5 +1,6 @@
 using Backend.Data.Repositories;
 using Backend.Data.UnitOfWork;
+using Backend.Features.Activities.Dtos;
 using Backend.Features.Modules.Dtos;
 using Backend.Models.Courses;
 
@@ -25,7 +26,7 @@ public class ModuleService(
             OrderIndex = dto.OrderIndex
         };
 
-        await _moduleRepo.AddAsync(module);
+        _moduleRepo.Add(module);
 
         await _uow.SaveChangesAsync();
 
@@ -38,13 +39,21 @@ public class ModuleService(
 
         var list = new List<ViewModuleDto>();
         foreach (var module in modules) {
-            int activityCount = await _activityRepo.CountActivitiesAsync(module);
+            var activities = await _activityRepo.GetByModuleIdAsync(module.Id);
 
             list.Add(new ViewModuleDto(
                 module.Id,
                 module.Title,
                 module.OrderIndex,
-                activityCount
+                activities
+                    .Select(a => new ViewActivityDto(
+                        a.Id,
+                        a.Title,
+                        a.Type,
+                        a.OrderIndex,
+                        a.AvailableFrom,
+                        a.AvailableUntil
+                    )).ToList()
             ));
         }
 

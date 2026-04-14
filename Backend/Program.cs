@@ -21,6 +21,7 @@ using Backend.Features.Assignments.Services;
 using Backend.Data.Repositories;
 using Backend.Features.Enrollments.Services;
 using Backend.Features.Lessons.Services;
+using Backend.Data.UnitOfWork;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -88,6 +89,8 @@ builder.Services
     })
     .AddDefaultTokenProviders()
     .AddEntityFrameworkStores<AppDbContext>();
+
+builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();
 
 // Inject repositories
 builder.Services.AddScoped<IActivityRepository, ActivityRepository>();
