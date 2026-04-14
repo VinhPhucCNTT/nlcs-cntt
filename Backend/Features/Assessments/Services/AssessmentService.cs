@@ -1,17 +1,24 @@
 using Backend.Data.Repositories;
 using Backend.Data.UnitOfWork;
-using Backend.Features.Assessments.Dtos;
 using Backend.Models.Assessments;
+using Backend.Features.Assessments.Dtos.Modify;
+using Backend.Features.Assessments.Dtos.Submission;
+using Backend.Features.Assessments.Dtos.View;
+using Microsoft.AspNetCore.Identity;
+using Backend.Models.Users;
+using Backend.Models.Enums;
 
 namespace Backend.Features.Assessments.Services;
 
 public class AssessmentService(
     IAssessmentRepository assessmentRepo,
-    IAssessmentAttemptRepository attemptRepo,
+    IQuestionRepository questionRepo,
+    UserManager<ApplicationUser> userManager,
     IUnitOfWork uow) : IAssessmentService
 {
     private readonly IAssessmentRepository _assessmentRepo = assessmentRepo;
-    private readonly IAssessmentAttemptRepository _attemptRepo = attemptRepo;
+    private readonly IQuestionRepository _questionRepo = questionRepo;
+    private readonly UserManager<ApplicationUser> _userManager = userManager;
     private readonly IUnitOfWork _uow = uow;
 
     public async Task<Guid> CreateAsync(
@@ -27,28 +34,160 @@ public class AssessmentService(
             PassingScore = dto.PassingScore
         };
 
-        await _assessmentRepo.AddAsync(assessment);
+        _assessmentRepo.Add(assessment);
 
         await _uow.SaveChangesAsync();
 
         return assessment.Id;
     }
 
-    public async Task SubmitAttemptAsync(
+    public async Task<ViewAssessmentDto?> GetByIdAsync(Guid id)
+    {
+        var assessment = await _assessmentRepo.GetByIdAsync(id);
+        if (assessment is null)
+            return null;
+
+        return new ViewAssessmentDto(
+            assessment.Id,
+            assessment.Type,
+            assessment.TimeLimitMinutes,
+            assessment.MaxAttempts,
+            assessment.PassingScore,
+            assessment.ShuffleQuestions
+        );
+    }
+
+    public async Task<List<ViewQuestionDto>?> GetAssessmentQuestionsAsync(Guid id)
+    {
+        var assessment = await _assessmentRepo.GetFullContentByIdAsync(id);
+        if (assessment is null)
+            return null;
+
+        return assessment.Questions
+            .OrderBy(q => q.OrderIndex)
+            .Select(q => new ViewQuestionDto(
+                q.Id,
+                q.QuestionText,
+                q.Type,
+                q.Points,
+                q.OrderIndex,
+                q.Options
+                    .Select(o => new ViewQuestionOptionDto(
+                        o.Id,
+                        o.OptionText
+                    )).ToList()
+            )).ToList();
+    }
+
+    public async Task<bool> UpdateAsync(Guid id, UpdateAssessmentDto dto)
+    {
+        var assessment = await _assessmentRepo.GetByIdAsync(id);
+        if (assessment is null)
+            return false;
+
+        assessment.TimeLimitMinutes = dto.TimeLimitMinutes;
+        assessment.MaxAttempts = dto.MaxAttempts;
+        assessment.Password = dto.Password;
+        assessment.PassingScore = dto.PassingScore;
+        assessment.ShuffleQuestions = dto.ShuffleQuestions;
+
+        _assessmentRepo.Update(assessment);
+
+        await _uow.SaveChangesAsync();
+        return true;
+    }
+
+    public async Task<bool> DeleteAsync(Guid id)
+    {
+        var assessment = await _assessmentRepo.GetByIdAsync(id);
+        if (assessment is null)
+            return false;
+
+        _assessmentRepo.Remove(assessment);
+
+        await _uow.SaveChangesAsync();
+        return true;
+    }
+
+    public async Task<bool> RestoreAsync(Guid id)
+    {
+        var assessment = await _assessmentRepo.GetDeletedByIdAsync(id);
+        if (assessment is null)
+            return false;
+
+        _assessmentRepo.Restore(assessment);
+
+        await _uow.SaveChangesAsync();
+        return true;
+    }
+
+    public async Task<bool> HardDeleteAsync(Guid id)
+    {
+        var assessment = await _assessmentRepo.GetDeletedByIdAsync(id);
+        if (assessment is null)
+            return false;
+
+        _assessmentRepo.HardDelete(assessment);
+
+        await _uow.SaveHardChangesAsync();
+        return true;
+    }
+
+    public async Task<AssessmentResultDto?> SubmitAttemptAsync(
         Guid assessmentId,
         Guid studentId,
         SubmitAssessmentDto dto)
     {
-        var attempt = new AssessmentAttempt
+        var assessment = await _assessmentRepo.GetFullContentByIdAsync(assessmentId);
+        if (assessment is null)
+            return null;
+
+        var student = await _userManager.FindByIdAsync(studentId.ToString());
+        if (student is null)
+            return null;
+
+        decimal score = 0;
+        foreach (var answer in dto.Answers)
         {
-            AssessmentId = assessmentId,
-            StudentId = studentId,
-            Score = dto.Score,
-            SubmittedAt = DateTime.UtcNow
-        };
+            var question = await _questionRepo.GetQuestionByIdAsync(answer.QuestionId);
+            if (question is null)
+                continue;
 
-        await _attemptRepo.AddAsync(attempt);
+            if (IsQuestionCorrect(answer, question))
+                score += question.Points;
+        }
 
-        await _uow.SaveChangesAsync();
+        var passed = false;
+        if (score >= assessment.PassingScore)
+            passed = true;
+
+        return new AssessmentResultDto(score, passed);
+    }
+
+    private bool IsQuestionCorrect(SubmitAnswerDto answer, AssessmentQuestion question)
+    {
+        bool result = false;
+
+        if (question.Type == QuestionType.SingleChoice)
+        {
+            var answerText = answer.AnswerText[0];
+            foreach (var option in question.Options)
+                if (option.IsCorrect &&
+                    option.OptionText.Equals(answerText, StringComparison.OrdinalIgnoreCase))
+                {
+                    result = true;
+                    break;
+                }
+        }
+        else
+        {
+            foreach (var option in question.Options)
+                if (option.IsCorrect &&
+                    !answer.AnswerText.Contains(option.OptionText))
+                    break;
+            result = true;
+        }
+
+        return result;
     }
 }

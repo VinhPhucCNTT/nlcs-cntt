@@ -18,6 +18,9 @@ using Backend.Features.Modules.Services;
 using Backend.Features.Activities.Services;
 using Backend.Features.Assessments.Services;
 using Backend.Features.Assignments.Services;
+using Backend.Data.Repositories;
+using Backend.Features.Enrollments.Services;
+using Backend.Features.Lessons.Services;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -86,12 +89,26 @@ builder.Services
     .AddDefaultTokenProviders()
     .AddEntityFrameworkStores<AppDbContext>();
 
-// Add services
-builder.Services.AddScoped<ICourseService, CourseService>();
-builder.Services.AddScoped<IModuleService, ModuleService>();
+// Inject repositories
+builder.Services.AddScoped<IActivityRepository, ActivityRepository>();
+builder.Services.AddScoped<IAssessmentAttemptRepository, AssessmentAttemptRepository>();
+builder.Services.AddScoped<IAssessmentRepository, AssessmentRepository>();
+builder.Services.AddScoped<IAssignmentRepository, AssignmentRepository>();
+builder.Services.AddScoped<IAssignmentSubmissionRepository, AssignmentSubmissionRepository>();
+builder.Services.AddScoped<ICourseRepository, CourseRepository>();
+builder.Services.AddScoped<IEnrollmentRepository, EnrollmentRepository>();
+builder.Services.AddScoped<ILessonRepository, LessonRepository>();
+builder.Services.AddScoped<IModuleRepository, ModuleRepository>();
+builder.Services.AddScoped<IQuestionRepository, QuestionRepository>();
+
+// Inject services
 builder.Services.AddScoped<IActivityService, ActivityService>();
 builder.Services.AddScoped<IAssessmentService, AssessmentService>();
 builder.Services.AddScoped<IAssignmentService, AssignmentService>();
+builder.Services.AddScoped<ICourseService, CourseService>();
+builder.Services.AddScoped<IEnrollmentService, EnrollmentService>();
+builder.Services.AddScoped<ILessonService, LessonService>();
+builder.Services.AddScoped<IModuleService, ModuleService>();
 
 var app = builder.Build();
 

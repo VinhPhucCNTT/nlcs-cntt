@@ -149,10 +149,8 @@ public class CourseService(
                             a.OrderIndex,
                             a.AvailableFrom,
                             a.AvailableUntil
-                        ))
-                        .ToList()
-                ))
-                .ToList()
+                        )).ToList()
+                )).ToList()
         );
     }
 

@@ -1,4 +1,5 @@
 using Backend.Models.Courses;
+using Backend.Models.Users;
 using Microsoft.EntityFrameworkCore;
 
 namespace Backend.Data.Repositories;
@@ -40,6 +41,20 @@ public class CourseRepository(AppDbContext db) : ICourseRepository
     public async Task<List<Course>> GetAllAsync()
     {
         return await _db.Courses.ToListAsync();
+    }
+
+    public async Task<List<Course>> GetByInstructorAsync(ApplicationUser intructor)
+    {
+        return await _db.Courses
+            .Where(x => x.InstructorId == intructor.Id)
+            .ToListAsync();
+    }
+
+    public async Task<List<CourseModule>> GetModulesAsync(Course course)
+    {
+        return await _db.CourseModules
+            .Where(x => x.CourseId == course.Id)
+            .ToListAsync();
     }
 
     public async Task AddAsync(Course course)

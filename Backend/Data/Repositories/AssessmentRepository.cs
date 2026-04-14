@@ -12,6 +12,14 @@ public class AssessmentRepository(AppDbContext db) : IAssessmentRepository
         return await _db.Assessments.FirstOrDefaultAsync(x => x.Id == id);
     }
 
+    public async Task<Assessment?> GetFullContentByIdAsync(Guid id)
+    {
+        return await _db.Assessments
+            .Include(a => a.Questions.OrderBy(q => q.OrderIndex))
+            .ThenInclude(q => q.Options)
+            .FirstOrDefaultAsync(x => x.Id == id);
+    }
+
     public async Task<Assessment?> GetDeletedByIdAsync(Guid id)
     {
         return await _db.Assessments

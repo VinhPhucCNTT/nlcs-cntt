@@ -6,6 +6,8 @@ public interface IAssessmentRepository
 {
     Task<Assessment?> GetByIdAsync(Guid id);
 
+    Task<Assessment?> GetFullContentByIdAsync(Guid id);
+
     Task<Assessment?> GetDeletedByIdAsync(Guid id);
 
     void Add(Assessment assessment);

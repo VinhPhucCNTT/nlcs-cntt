@@ -8,6 +8,5 @@ public record ViewAssessmentDto(
     int TimeLimitMinutes,
     int MaxAttempts,
     decimal PassingScore,
-    bool ShuffleQuestions,
-    List<ViewQuestionDto> Questions
+    bool ShuffleQuestions
 );

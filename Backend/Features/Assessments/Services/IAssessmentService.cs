@@ -1,4 +1,6 @@
-using Backend.Features.Assessments.Dtos;
+using Backend.Features.Assessments.Dtos.Modify;
+using Backend.Features.Assessments.Dtos.Submission;
+using Backend.Features.Assessments.Dtos.View;
 using Backend.Models.Assessments;
 
 namespace Backend.Features.Assessments.Services;
@@ -9,13 +11,17 @@ public interface IAssessmentService
 
     Task<ViewAssessmentDto?> GetByIdAsync(Guid id);
 
-    Task<List<ViewQuestionDto>> GetAssessmentQuestionsAsync(Assessment assessment);
+    Task<List<ViewQuestionDto>?> GetAssessmentQuestionsAsync(Guid id);
 
-    Task UpdateAsync(Guid id, UpdateAssessmentDto dto);
+    Task<bool> UpdateAsync(Guid id, UpdateAssessmentDto dto);
 
-    Task DeleteAsync(Guid id);
+    Task<bool> DeleteAsync(Guid id);
 
-    Task<AssessmentResultDto> SubmitAttemptAsync(
+    Task<bool> RestoreAsync(Guid id);
+
+    Task<bool> HardDeleteAsync(Guid id);
+
+    Task<AssessmentResultDto?> SubmitAttemptAsync(
         Guid assessmentId,
         Guid studentId,
         SubmitAssessmentDto dto);
