@@ -1,3 +1,5 @@
+using Backend.Features.Lessons.Dtos;
+
 namespace Backend.Features.Lessons.Services;
 
 public interface ILessonService

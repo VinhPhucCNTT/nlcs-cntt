@@ -27,11 +27,54 @@ public class AssignmentService(
             MaxPoints = dto.MaxPoints
         };
 
-        await _repo.AddAsync(assignment);
+        _repo.Add(assignment);
 
         await _uow.SaveChangesAsync();
 
         return assignment.Id;
+    }
+
+    public async Task<ViewAssignmentDto?> GetByIdAsync(Guid id)
+    {
+        var assignment = await _repo.GetByIdAsync(id);
+        if (assignment is null)
+            return null;
+
+        return new ViewAssignmentDto(
+            assignment.Id,
+            assignment.Instructions,
+            assignment.DueDate,
+            assignment.MaxPoints
+        );
+    }
+
+    public async Task<bool> UpdateAsync(Guid id, UpdateAssignmentDto dto)
+    {
+        var assignment = await _repo.GetByIdAsync(id);
+        if (assignment is null)
+            return false;
+
+        assignment.Instructions = dto.Instructions;
+        assignment.DueDate = dto.DueDate;
+        assignment.AllowLateSubmission = dto.AllowLateSubmission;
+        assignment.MaxPoints = dto.MaxPoints;
+
+        _repo.Update(assignment);
+
+        await _uow.SaveChangesAsync();
+        return true;
+    }
+
+    public async Task<bool> DeleteAsync(Guid id)
+    {
+        var assignment = await _repo.GetByIdAsync(id);
+        if (assignment is null)
+            return false;
+
+        _repo.Remove(assignment);
+
+        await _uow.SaveChangesAsync();
+        return true;
     }
 
     public async Task SubmitAsync(
@@ -47,7 +90,7 @@ public class AssignmentService(
             SubmittedAt = DateTime.UtcNow
         };
 
-        await _submissionRepo.AddAsync(submission);
+        _submissionRepo.Add(submission);
 
         await _uow.SaveChangesAsync();
     }

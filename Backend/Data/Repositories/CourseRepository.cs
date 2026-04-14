@@ -22,6 +22,14 @@ public class CourseRepository(AppDbContext db) : ICourseRepository
             .FirstOrDefaultAsync(x => x.Id == id && x.IsDeleted);
     }
 
+    public async Task<Course?> GetFullContentByIdAsync(Guid courseId)
+    {
+        return await _db.Courses
+            .Include(c => c.Modules.OrderBy(m => m.OrderIndex))
+                .ThenInclude(m => m.Activities.OrderBy(a => a.OrderIndex))
+            .FirstOrDefaultAsync(c => c.Id == courseId);
+    }
+
     public async Task<int> CountEnrollmentsAsync(Course course)
     {
         return await _db.CourseEnrollments

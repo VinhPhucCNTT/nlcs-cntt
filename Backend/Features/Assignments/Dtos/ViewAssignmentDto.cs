@@ -3,6 +3,6 @@ namespace Backend.Features.Assignments.Dtos;
 public record ViewAssignmentDto(
     Guid Id,
     string Instructions,
-    DateTime DueDate,
+    DateTime? DueDate,
     decimal MaxPoints
 );

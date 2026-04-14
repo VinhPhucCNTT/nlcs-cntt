@@ -8,9 +8,9 @@ public interface IAssignmentService
 
     Task<ViewAssignmentDto?> GetByIdAsync(Guid id);
 
-    Task UpdateAsync(Guid id, UpdateAssignmentDto dto);
+    Task<bool> UpdateAsync(Guid id, UpdateAssignmentDto dto);
 
-    Task DeleteAsync(Guid id);
+    Task<bool> DeleteAsync(Guid id);
 
     Task SubmitAsync(
         Guid assignmentId,

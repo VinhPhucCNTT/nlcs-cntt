@@ -12,7 +12,7 @@ public interface ICourseService
 
     Task<List<ViewCourseDto>> GetInstructorCoursesAsync(Guid instructorId);
 
-    Task<CourseContentDto> GetFullCourseContentAsync(Guid courseId);
+    Task<CourseContentDto?> GetFullCourseContentAsync(Guid courseId);
 
     Task<bool> UpdateAsync(Guid id, UpdateCourseDto dto);
 

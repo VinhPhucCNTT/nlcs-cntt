@@ -6,6 +6,7 @@ using Microsoft.AspNetCore.Http.HttpResults;
 
 namespace Backend.Endpoints;
 
+// NOTE: This endpoint comes from a previous implementation
 public static class CourseEndpoints
 {
     public static void AddCourseEndpoints(this IEndpointRouteBuilder app)
