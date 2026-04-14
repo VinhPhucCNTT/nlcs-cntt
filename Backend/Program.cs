@@ -136,5 +136,12 @@ if (app.Environment.IsDevelopment())
 {
     app.AddAuthAdminEndpoints();
 }
+app.AddCourseEndpoints();
+app.AddEnrollmentEndpoints();
+app.AddModuleEndpoints();
+app.AddActivityEndpoints();
+app.AddLessonEndpoints();
+app.AddAssessmentEndpoints();
+app.AddAssignmentEndpoints();
 
 app.Run();
