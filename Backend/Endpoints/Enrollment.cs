@@ -12,9 +12,11 @@ public static class EnrollmentEndpoints
     {
         var enrollments = app.MapGroup("/api/enrollments");
 
-        enrollments.MapGet("/my-courses", GetMyCourses);
+        enrollments.MapGet("/my-courses", GetMyCourses)
+            .RequireAuthorization(p => p.RequireRole("Student"));
 
-        app.MapPost("/api/courses/{courseId:guid}/enroll", Enroll);
+        app.MapPost("/api/courses/{courseId:guid}/enroll", Enroll)
+            .RequireAuthorization(p => p.RequireRole("Student"));
     }
 
     private static async Task<NoContent> Enroll(

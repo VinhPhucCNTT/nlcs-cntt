@@ -12,11 +12,13 @@ public static class AssessmentEndpoints
     public static void AddAssessmentEndpoints(
         this IEndpointRouteBuilder app)
     {
-        app.MapPost("/api/activities/{activityId:guid}/assessments", Create);
+        app.MapPost("/api/activities/{activityId:guid}/assessments", Create)
+            .RequireAuthorization(p => p.RequireRole("Instructor"));
 
         app.MapGet("/api/assessments/{id:guid}", Get);
 
-        app.MapPost("/api/assessments/{id:guid}/submit", Submit);
+        app.MapPost("/api/assessments/{id:guid}/submit", Submit)
+            .RequireAuthorization(p => p.RequireRole("Instructor"));
     }
 
     private static async Task<Ok<Guid>> Create(
@@ -28,12 +30,15 @@ public static class AssessmentEndpoints
             await service.CreateAsync(activityId, dto));
     }
 
-    private static async Task<Ok<ViewAssessmentDto?>> Get(
+    private static async Task<Results<Ok<ViewAssessmentDto>, NotFound>> Get(
         Guid id,
         IAssessmentService service)
     {
-        return TypedResults.Ok(
-            await service.GetByIdAsync(id));
+        var assessment = await service.GetByIdAsync(id);
+        if (assessment is null)
+            return TypedResults.NotFound();
+
+        return TypedResults.Ok(assessment);
     }
 
     private static async Task<Ok<AssessmentResultDto>> Submit(

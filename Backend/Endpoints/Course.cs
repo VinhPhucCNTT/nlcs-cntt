@@ -11,15 +11,21 @@ public static class CourseEndpoints
     {
         var courses = app.MapGroup("/api/courses");
 
-        courses.MapGet("/", GetAllCourses);
-        courses.MapGet("/{id:guid}", GetCourseById);
-        courses.MapGet("/{id:guid}/content", GetCourseContent);
+        courses.MapGet("/", GetAllCourses)
+            .RequireAuthorization(p => p.RequireRole("Instructor", "Student"));
+        courses.MapGet("/{id:guid}", GetCourseById)
+            .RequireAuthorization(p => p.RequireRole("Instructor", "Student"));
+        courses.MapGet("/{id:guid}/content", GetCourseContent)
+            .RequireAuthorization(p => p.RequireRole("Instructor", "Student"));
 
-        courses.MapPut("/", CreateCourse);
+        courses.MapPut("/", CreateCourse)
+            .RequireAuthorization(p => p.RequireRole("Instructor"));
 
-        courses.MapPost("/{id:guid}", UpdateCourse);
+        courses.MapPost("/{id:guid}", UpdateCourse)
+            .RequireAuthorization(p => p.RequireRole("Instructor"));
 
-        courses.MapDelete("/{id:guid}", DeleteCourse);
+        courses.MapDelete("/{id:guid}", DeleteCourse)
+            .RequireAuthorization(p => p.RequireRole("Instructor"));
     }
 
     private static async Task<Ok<List<ViewCourseDto>>> GetAllCourses(

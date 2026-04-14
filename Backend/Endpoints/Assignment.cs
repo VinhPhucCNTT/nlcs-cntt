@@ -10,11 +10,14 @@ public static class AssignmentEndpoints
     public static void AddAssignmentEndpoints(
         this IEndpointRouteBuilder app)
     {
-        app.MapPost("/api/activities/{activityId:guid}/assignments", Create);
+        app.MapPut("/api/activities/{activityId:guid}/assignments", Create)
+            .RequireAuthorization(p => p.RequireRole("Instructor"));
 
-        app.MapGet("/api/assignments/{id:guid}", Get);
+        app.MapGet("/api/assignments/{id:guid}", Get)
+            .RequireAuthorization(p => p.RequireRole("Instructor", "Student"));
 
-        app.MapPost("/api/assignments/{id:guid}/submit", Submit);
+        app.MapPost("/api/assignments/{id:guid}/submit", Submit)
+            .RequireAuthorization(p => p.RequireRole("Student"));
     }
 
     private static async Task<Ok<Guid>> Create(
@@ -26,12 +29,15 @@ public static class AssignmentEndpoints
             await service.CreateAsync(activityId, dto));
     }
 
-    private static async Task<Ok<ViewAssignmentDto?>> Get(
+    private static async Task<Results<Ok<ViewAssignmentDto>, NotFound>> Get(
         Guid id,
         IAssignmentService service)
     {
-        return TypedResults.Ok(
-            await service.GetByIdAsync(id));
+        var assignment = await service.GetByIdAsync(id);
+        if (assignment is null)
+            return TypedResults.NotFound();
+
+        return TypedResults.Ok(assignment);
     }
 
     private static async Task<NoContent> Submit(

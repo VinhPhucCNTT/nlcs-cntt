@@ -9,13 +9,16 @@ public static class ModuleEndpoints
     public static void AddModuleEndpoints(
         this IEndpointRouteBuilder app)
     {
-        app.MapPut("/api/courses/{courseId:guid}/modules", CreateModule);
+        app.MapPut("/api/courses/{courseId:guid}/modules", CreateModule)
+            .RequireAuthorization(p => p.RequireRole("Instructor"));
 
         app.MapGet("/api/courses/{courseId:guid}/modules", GetModules);
 
-        app.MapPost("/api/modules/{id:guid}", UpdateModule);
+        app.MapPost("/api/modules/{id:guid}", UpdateModule)
+            .RequireAuthorization(p => p.RequireRole("Instructor"));
 
-        app.MapDelete("/api/modules/{id:guid}", DeleteModule);
+        app.MapDelete("/api/modules/{id:guid}", DeleteModule)
+            .RequireAuthorization(p => p.RequireRole("Instructor"));
     }
 
     private static async Task<Ok<Guid>> CreateModule(

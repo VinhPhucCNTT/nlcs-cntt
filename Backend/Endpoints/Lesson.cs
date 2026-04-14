@@ -9,13 +9,16 @@ public static class LessonEndpoints
     public static void AddLessonEndpoints(
         this IEndpointRouteBuilder app)
     {
-        app.MapPost("/api/activities/{activityId:guid}/lessons", Create);
+        app.MapPut("/api/activities/{activityId:guid}/lessons", Create)
+            .RequireAuthorization(p => p.RequireRole("Instructor"));
 
         app.MapGet("/api/lessons/{id:guid}", Get);
 
-        app.MapPut("/api/lessons/{id:guid}", Update);
+        app.MapPost("/api/lessons/{id:guid}", Update)
+            .RequireAuthorization(p => p.RequireRole("Instructor"));
 
-        app.MapDelete("/api/lessons/{id:guid}", Delete);
+        app.MapDelete("/api/lessons/{id:guid}", Delete)
+            .RequireAuthorization(p => p.RequireRole("Instructor"));
     }
 
     private static async Task<Ok<Guid>> Create(
@@ -27,12 +30,15 @@ public static class LessonEndpoints
             await service.CreateAsync(activityId, dto));
     }
 
-    private static async Task<Ok<ViewLessonDto?>> Get(
+    private static async Task<Results<Ok<ViewLessonDto>, NotFound>> Get(
         Guid id,
         ILessonService service)
     {
-        return TypedResults.Ok(
-            await service.GetByIdAsync(id));
+        var lesson = await service.GetByIdAsync(id);
+        if (lesson is null)
+            return TypedResults.NotFound();
+
+        return TypedResults.Ok(lesson);
     }
 
     private static async Task<NoContent> Update(

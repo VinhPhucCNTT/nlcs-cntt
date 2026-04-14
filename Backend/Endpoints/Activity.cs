@@ -9,11 +9,14 @@ public static class ActivityEndpoints
     public static void AddActivityEndpoints(
         this IEndpointRouteBuilder app)
     {
-        app.MapPost("/api/modules/{moduleId:guid}/activities", Create);
+        app.MapPut("/api/modules/{moduleId:guid}/activities", Create)
+            .RequireAuthorization(p => p.RequireRole("Instructor"));
 
-        app.MapGet("/api/modules/{moduleId:guid}/activities", Get);
+        app.MapGet("/api/modules/{moduleId:guid}/activities", Get)
+            .RequireAuthorization(p => p.RequireRole("Instructor"));
 
-        app.MapDelete("/api/activities/{id:guid}", Delete);
+        app.MapDelete("/api/activities/{id:guid}", Delete)
+            .RequireAuthorization(p => p.RequireRole("Instructor"));
     }
 
     private static async Task<Ok<Guid>> Create(

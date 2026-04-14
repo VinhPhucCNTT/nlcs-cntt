@@ -1,7 +1,6 @@
 using Backend.Features.Assessments.Dtos.Modify;
 using Backend.Features.Assessments.Dtos.Submission;
 using Backend.Features.Assessments.Dtos.View;
-using Backend.Models.Assessments;
 
 namespace Backend.Features.Assessments.Services;
 
