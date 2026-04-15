@@ -28,4 +28,10 @@ public interface IAssessmentService
     Task<Guid?> AddQuestionAsync(
         Guid assessmentId,
         CreateAssessmentQuestionBody dto);
+
+    Task<bool> UpdateQuestionAsync(
+        Guid questionId,
+        UpdateQuestionDto dto);
+
+    Task<bool> DeleteQuestionAsync(Guid questionId);
 }

@@ -227,4 +227,47 @@ public class AssessmentService(
 
         return result;
     }
+
+    public async Task<bool> UpdateQuestionAsync(
+        Guid questionId,
+        UpdateQuestionDto dto)
+    {
+        var question = await _questionRepo.GetQuestionByIdAsync(questionId);
+        if (question is null)
+            return false;
+
+        question.QuestionText = dto.QuestionText;
+        question.Type = dto.Type;
+        question.Points = dto.Points;
+        question.OrderIndex = dto.OrderIndex;
+
+        question.Options.Clear();
+        foreach (var option in dto.Options ?? new List<UpdateQuestionOptionDto>())
+        {
+            question.Options.Add(new QuestionOption
+            {
+                Id = Guid.NewGuid(),
+                QuestionId = question.Id,
+                OptionText = option.OptionText,
+                IsCorrect = option.IsCorrect
+            });
+        }
+
+        _questionRepo.Update(question);
+        await _uow.SaveChangesAsync();
+
+        return true;
+    }
+
+    public async Task<bool> DeleteQuestionAsync(Guid questionId)
+    {
+        var question = await _questionRepo.GetQuestionByIdAsync(questionId);
+        if (question is null)
+            return false;
+
+        _questionRepo.Remove(question);
+        await _uow.SaveChangesAsync();
+
+        return true;
+    }
 }

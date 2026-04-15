@@ -6,5 +6,6 @@ public record UpdateQuestionDto(
     string QuestionText,
     QuestionType Type,
     decimal Points,
-    int OrderIndex
+    int OrderIndex,
+    List<UpdateQuestionOptionDto> Options
 );
