@@ -8,5 +8,7 @@ public record ViewActivityDto(
     ActivityType Type,
     int OrderIndex,
     DateTime? AvailableFrom,
-    DateTime? AvailableUntil
+    DateTime? AvailableUntil,
+    /// <summary>Lesson, Assignment, or Assessment entity id for detail APIs (distinct from activity id).</summary>
+    Guid? ResourceId
 );

@@ -26,8 +26,16 @@ public class CourseRepository(AppDbContext db) : ICourseRepository
     public async Task<Course?> GetFullContentByIdAsync(Guid courseId)
     {
         return await _db.Courses
+            .AsSplitQuery()
             .Include(c => c.Modules.OrderBy(m => m.OrderIndex))
                 .ThenInclude(m => m.Activities.OrderBy(a => a.OrderIndex))
+                    .ThenInclude(a => a.Lesson)
+            .Include(c => c.Modules)
+                .ThenInclude(m => m.Activities)
+                    .ThenInclude(a => a.Assessment)
+            .Include(c => c.Modules)
+                .ThenInclude(m => m.Activities)
+                    .ThenInclude(a => a.Assignment)
             .FirstOrDefaultAsync(c => c.Id == courseId);
     }
 
@@ -40,12 +48,15 @@ public class CourseRepository(AppDbContext db) : ICourseRepository
 
     public async Task<List<Course>> GetAllAsync()
     {
-        return await _db.Courses.ToListAsync();
+        return await _db.Courses
+            .Include(c => c.Instructor)
+            .ToListAsync();
     }
 
     public async Task<List<Course>> GetByInstructorAsync(ApplicationUser intructor)
     {
         return await _db.Courses
+            .Include(c => c.Instructor)
             .Where(x => x.InstructorId == intructor.Id)
             .ToListAsync();
     }

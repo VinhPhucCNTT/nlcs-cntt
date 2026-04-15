@@ -1,5 +1,6 @@
 using Backend.Data.Repositories;
 using Backend.Data.UnitOfWork;
+using Backend.Features.Activities;
 using Backend.Features.Activities.Dtos;
 using Backend.Features.Courses.Dtos;
 using Backend.Features.Modules.Dtos;
@@ -148,7 +149,8 @@ public class CourseService(
                             a.Type,
                             a.OrderIndex,
                             a.AvailableFrom,
-                            a.AvailableUntil
+                            a.AvailableUntil,
+                            a.GetResourceId()
                         )).ToList()
                 )).ToList()
         );

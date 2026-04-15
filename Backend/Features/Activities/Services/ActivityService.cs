@@ -1,5 +1,6 @@
 using Backend.Data.Repositories;
 using Backend.Data.UnitOfWork;
+using Backend.Features.Activities;
 using Backend.Features.Activities.Dtos;
 using Backend.Models.Courses;
 
@@ -21,7 +22,10 @@ public class ActivityService(
             ModuleId = moduleId,
             Title = dto.Title,
             Type = dto.Type,
-            OrderIndex = dto.OrderIndex
+            OrderIndex = dto.OrderIndex,
+            IsPublished = dto.IsPublished,
+            AvailableFrom = dto.AvailableFrom,
+            AvailableUntil = dto.AvailableUntil
         };
 
         _activityRepo.Add(activity);
@@ -42,7 +46,8 @@ public class ActivityService(
                 x.Type,
                 x.OrderIndex,
                 x.AvailableFrom,
-                x.AvailableUntil
+                x.AvailableUntil,
+                x.GetResourceId()
             )).ToList();
     }
 

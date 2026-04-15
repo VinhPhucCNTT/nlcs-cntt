@@ -1,3 +1,4 @@
+using System.Security.Claims;
 using Backend.Models.Users;
 using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Identity;
@@ -12,7 +13,8 @@ public static class AuthAdminEndpoints
         string? Email,
         string? UserName,
         string FullName,
-        DateTime CreatedAt
+        DateTime CreatedAt,
+        string Role
     );
 
     public static void AddAuthAdminEndpoints(this IEndpointRouteBuilder app)
@@ -22,6 +24,14 @@ public static class AuthAdminEndpoints
         auth.MapDelete("{email}", HandleDeleteUser);
         auth.MapGet("", HandleGetUsers);
         auth.MapGet("check", HandleCheck).RequireAuthorization();
+        app.MapGet("/debug-auth", (ClaimsPrincipal user) =>
+        {
+            return user.Claims.Select(c => new
+            {
+                c.Type,
+                c.Value
+            });
+        }).RequireAuthorization();
     }
 
     private static async
@@ -38,12 +48,28 @@ public static class AuthAdminEndpoints
         return TypedResults.Ok();
     }
 
-    private static async
-        Task<List<AdminUserResponse>>
+    private static async Task<List<AdminUserResponse>>
         HandleGetUsers(UserManager<ApplicationUser> userManager)
     {
-        var list = userManager.Users.Select(u => new AdminUserResponse(u.Id, u.Email, u.UserName, u.FullName, u.CreatedAt));
-        return await list.ToListAsync();
+        var users = await userManager.Users.ToListAsync();
+
+        var result = new List<AdminUserResponse>();
+
+        foreach (var user in users)
+        {
+            var roles = await userManager.GetRolesAsync(user);
+
+            result.Add(new AdminUserResponse(
+                user.Id,
+                user.Email,
+                user.UserName,
+                user.FullName,
+                user.CreatedAt,
+                roles.FirstOrDefault() ?? "No Role"
+            ));
+        }
+
+        return result;
     }
 
     private static Ok HandleCheck() => TypedResults.Ok();

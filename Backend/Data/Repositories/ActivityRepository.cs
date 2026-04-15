@@ -15,7 +15,12 @@ public class ActivityRepository(AppDbContext db) : IActivityRepository
     public async Task<List<CourseActivity>> GetByModuleIdAsync(Guid moduleId)
     {
         return await _db.CourseActivities
+            .AsSplitQuery()
             .Where(x => x.ModuleId == moduleId)
+            .Include(x => x.Lesson)
+            .Include(x => x.Assessment)
+            .Include(x => x.Assignment)
+            .OrderBy(x => x.OrderIndex)
             .ToListAsync();
     }
 

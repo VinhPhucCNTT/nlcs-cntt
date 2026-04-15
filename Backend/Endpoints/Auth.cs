@@ -12,7 +12,7 @@ public static class AuthEndpoints
     public record UserLoginRequest(string Email, string Password);
     public record UserLoginResponse(string Email, string Token);
 
-    public record UserRegisterRequest(string FullName, string Email, string Username, string Password); // Admin role is registered manually
+    public record UserRegisterRequest(string FullName, string Email, string Username, string Password, string Role);
     public record UserRegisterResponse(string Email);
 
     public static void AddAuthEndpoints(this IEndpointRouteBuilder app)
@@ -50,6 +50,9 @@ public static class AuthEndpoints
     {
         using var transaction = await dbContext.Database.BeginTransactionAsync();
 
+        if (request.Role != "Student" && request.Role != "Instructor")
+            return TypedResults.Unauthorized();
+
         var exist = await userManager.FindByEmailAsync(request.Email);
         if (exist is not null)
             return TypedResults.Unauthorized();
@@ -67,7 +70,7 @@ public static class AuthEndpoints
             return TypedResults.BadRequest(result.Errors.ToList());
         }
 
-        await userManager.AddToRoleAsync(user, "User");
+        await userManager.AddToRoleAsync(user, request.Role);
 
         await transaction.CommitAsync();
 

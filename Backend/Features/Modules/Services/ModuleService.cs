@@ -1,5 +1,6 @@
 using Backend.Data.Repositories;
 using Backend.Data.UnitOfWork;
+using Backend.Features.Activities;
 using Backend.Features.Activities.Dtos;
 using Backend.Features.Modules.Dtos;
 using Backend.Models.Courses;
@@ -52,7 +53,8 @@ public class ModuleService(
                         a.Type,
                         a.OrderIndex,
                         a.AvailableFrom,
-                        a.AvailableUntil
+                        a.AvailableUntil,
+                        a.GetResourceId()
                     )).ToList()
             ));
         }

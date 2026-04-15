@@ -22,7 +22,7 @@ public class JwtService(IConfiguration config, UserManager<ApplicationUser> user
 
         var claims = new List<Claim>
         {
-            new(JwtRegisteredClaimNames.Sub, user.Id.ToString()),
+            new(ClaimTypes.NameIdentifier, user.Id.ToString()),
             new(JwtRegisteredClaimNames.Email, user.Email!),
             new(ClaimTypes.Name, user.UserName!)
         };
@@ -35,7 +35,7 @@ public class JwtService(IConfiguration config, UserManager<ApplicationUser> user
             issuer: jwtSettings["Issuer"],
             audience: jwtSettings["Audience"],
             claims: claims,
-            expires: DateTime.Now.AddMinutes(
+            expires: DateTime.UtcNow.AddMinutes(
                 double.Parse(jwtSettings["DurationInMinutes"]!)),
             signingCredentials: creds);
 

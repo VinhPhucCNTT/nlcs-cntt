@@ -24,4 +24,8 @@ public interface IAssessmentService
         Guid assessmentId,
         Guid studentId,
         SubmitAssessmentDto dto);
+
+    Task<Guid?> AddQuestionAsync(
+        Guid assessmentId,
+        CreateAssessmentQuestionBody dto);
 }

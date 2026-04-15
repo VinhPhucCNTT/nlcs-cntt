@@ -22,6 +22,7 @@ using Backend.Data.Repositories;
 using Backend.Features.Enrollments.Services;
 using Backend.Features.Lessons.Services;
 using Backend.Data.UnitOfWork;
+using System.Security.Claims;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -47,6 +48,20 @@ builder.Services.AddOpenApi();
 builder.Services.AddAuthorization();
 builder.Services.AddScoped<JwtService>();
 
+builder.Services.AddDbContext<AppDbContext>(options =>
+    options.UseNpgsql(builder.Configuration.GetConnectionString("DefaultConnection"))
+);
+
+builder.Services
+    .AddIdentity<ApplicationUser, IdentityRole<Guid>>(options =>
+    {
+        options.User.RequireUniqueEmail = true;
+        options.User.AllowedUserNameCharacters =
+            "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789-._@+";
+    })
+    .AddDefaultTokenProviders()
+    .AddEntityFrameworkStores<AppDbContext>();
+
 var jwtSettings = builder.Configuration.GetSection("Jwt");
 var key = Encoding.UTF8.GetBytes(jwtSettings["Key"]!);
 
@@ -66,29 +81,21 @@ builder.Services.AddAuthentication(options =>
 
         ValidIssuer = jwtSettings["Issuer"],
         ValidAudience = jwtSettings["Audience"],
-        IssuerSigningKey = new SymmetricSecurityKey(key)
+        IssuerSigningKey = new SymmetricSecurityKey(key),
+
+        RoleClaimType = ClaimTypes.Role,
+        NameClaimType = ClaimTypes.Name
+    };
+
+    // DEBUG
+    options.Events = new JwtBearerEvents
+    {
+        OnTokenValidated = context =>
+        {
+            return Task.CompletedTask;
+        }
     };
 });
-
-// builder.Services.AddDbContextFactory<AppDbContext>(options =>
-//     options.UseNpgsql(builder.Configuration.GetConnectionString("DefaultConnection")),
-//     ServiceLifetime.Scoped
-// );
-
-builder.Services.AddDbContext<AppDbContext>(options =>
-    options.UseNpgsql(builder.Configuration.GetConnectionString("DefaultConnection"))
-);
-
-builder.Services
-    .AddIdentity<ApplicationUser, IdentityRole<Guid>>(options =>
-    {
-        options.User.RequireUniqueEmail = true;
-        options.User.AllowedUserNameCharacters =
-            "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789-._@+";
-        options.User.RequireUniqueEmail = true;
-    })
-    .AddDefaultTokenProviders()
-    .AddEntityFrameworkStores<AppDbContext>();
 
 builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();
 
@@ -125,10 +132,10 @@ if (app.Environment.IsDevelopment())
     await app.SeedRolesAsync();
 }
 
+app.UseHttpsRedirection();
+
 app.UseAuthentication();
 app.UseAuthorization();
-
-app.UseHttpsRedirection();
 
 // Map endpoints
 app.AddAuthEndpoints();
@@ -143,5 +150,6 @@ app.AddActivityEndpoints();
 app.AddLessonEndpoints();
 app.AddAssessmentEndpoints();
 app.AddAssignmentEndpoints();
+
 
 app.Run();

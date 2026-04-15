@@ -31,7 +31,9 @@ public class AssessmentService(
             Type = dto.Type,
             TimeLimitMinutes = dto.TimeLimitMinutes,
             MaxAttempts = dto.MaxAttempts,
-            PassingScore = dto.PassingScore
+            Password = dto.Password,
+            PassingScore = dto.PassingScore,
+            ShuffleQuestions = dto.ShuffleQuestions
         };
 
         _assessmentRepo.Add(assessment);
@@ -162,6 +164,41 @@ public class AssessmentService(
             passed = true;
 
         return new AssessmentResultDto(score, passed);
+    }
+
+    public async Task<Guid?> AddQuestionAsync(
+        Guid assessmentId,
+        CreateAssessmentQuestionBody dto)
+    {
+        var assessment = await _assessmentRepo.GetByIdAsync(assessmentId);
+        if (assessment is null)
+            return null;
+
+        var question = new AssessmentQuestion
+        {
+            Id = Guid.NewGuid(),
+            AssessmentId = assessmentId,
+            QuestionText = dto.QuestionText,
+            Type = dto.Type,
+            Points = dto.Points,
+            OrderIndex = dto.OrderIndex
+        };
+
+        foreach (var o in dto.Options)
+        {
+            question.Options.Add(new QuestionOption
+            {
+                Id = Guid.NewGuid(),
+                OptionText = o.OptionText,
+                IsCorrect = o.IsCorrect
+            });
+        }
+
+        _questionRepo.Add(question);
+
+        await _uow.SaveChangesAsync();
+
+        return question.Id;
     }
 
     private bool IsQuestionCorrect(SubmitAnswerDto answer, AssessmentQuestion question)
