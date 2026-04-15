@@ -1,12 +1,7 @@
-import {
-    useEffect,
-    useMemo,
-    useState,
-} from "react";
+import { useMemo, useState } from "react";
 
 import type { PropsWithChildren } from "react";
 
-import { api } from "@/shared/services/api";
 import { parseJwt } from "../utils/jwt";
 import type { IUser } from "./auth.t";
 import { AuthContext } from "./AuthContext";

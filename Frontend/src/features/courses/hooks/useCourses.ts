@@ -1,5 +1,5 @@
 import { useQuery } from "@tanstack/react-query";
-import { getCourses } from "../api/courseApi";
+import { getCourses } from "@/features/courses/api/courseApi";
 
 export const useCourses = () =>
   useQuery({

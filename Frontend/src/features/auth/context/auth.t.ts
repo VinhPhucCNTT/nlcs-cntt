@@ -1,6 +1,8 @@
 export interface IUser {
   email: string;
   roles: string[];
+  /** NameIdentifier claim (user id). */
+  userId: string;
 }
 
 export interface IAuthContext {

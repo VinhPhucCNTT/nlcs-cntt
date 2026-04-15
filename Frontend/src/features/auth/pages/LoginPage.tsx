@@ -7,8 +7,6 @@ import { useAuthContext } from "../context/useAuthContext";
 
 const { Title, Text } = Typography;
 
-const LOGIN_TOKEN_KEY = "auth_token";
-
 export default function LoginPage() {
     const navigate = useNavigate();
     const { login } = useAuthContext();
@@ -17,8 +15,7 @@ export default function LoginPage() {
     const onFinish = async (values: ILoginRequest) => {
         const response = await loginMutation(values);
         login(response.token);
-        localStorage.setItem(LOGIN_TOKEN_KEY, response.token);
-        navigate("/courses");
+        navigate("/dashboard");
     };
 
     const getErrorMessage = () => {

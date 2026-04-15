@@ -13,6 +13,7 @@ export interface IRegisterRequest {
   fullName: string;
   username: string;
   password: string;
+  role: "Student" | "Instructor";
 }
 
 export interface IRegisterResponse {

@@ -1,18 +1,25 @@
 import { Card, Button } from "antd";
 import { useNavigate } from "react-router-dom";
 
+import { useAuthContext } from "@/features/auth/context/useAuthContext";
+import { getPrimaryRole } from "@/shared/helpers/role";
+
 export default function QuickActions() {
   const navigate = useNavigate();
+  const { user } = useAuthContext();
+  const role = getPrimaryRole(user?.roles);
 
   return (
-    <Card title="Quick Actions">
-      <Button type="primary" block onClick={() => navigate("/courses/create")}>
-        Create Course
+    <Card title="Quick actions">
+      <Button type="primary" block onClick={() => navigate("/courses")}>
+        {role === "Instructor" ? "Manage courses" : "Browse courses"}
       </Button>
 
-      <Button style={{ marginTop: 10 }} block onClick={() => navigate("/courses")}>
-        Browse Courses
-      </Button>
+      {role === "Student" && (
+        <Button style={{ marginTop: 10 }} block onClick={() => navigate("/assignments")}>
+          My assignments
+        </Button>
+      )}
     </Card>
   );
 }

@@ -1,4 +1,4 @@
-import { Alert, Button, Card, Form, Input, Typography, message } from "antd";
+import { Alert, Button, Card, Form, Input, Select, Typography, message } from "antd";
 import { Link, useNavigate } from "react-router-dom";
 import { useRegister } from "../hooks/useAuth";
 import type { IIdentityError, IRegisterRequest } from "../types";
@@ -74,6 +74,20 @@ export default function RegisterPage() {
             rules={[{ required: true, message: "Please enter a username." }]}
           >
             <Input placeholder="username" />
+          </Form.Item>
+
+          <Form.Item
+            label="Role"
+            name="role"
+            rules={[{ required: true }]}
+            initialValue="Student"
+          >
+            <Select
+              options={[
+                { value: "Student", label: "Student" },
+                { value: "Instructor", label: "Instructor" },
+              ]}
+            />
           </Form.Item>
 
           <Form.Item
