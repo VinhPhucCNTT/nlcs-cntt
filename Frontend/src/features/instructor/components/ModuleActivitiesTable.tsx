@@ -5,7 +5,7 @@ import {
   deleteActivity,
   getActivities,
 } from "@/features/instructor/api/outlineApi";
-import { ActivityType } from "@/shared/types/lms";
+import { ActivityType, type ViewActivity } from "@/shared/types/lms";
 
 interface Props {
   moduleId: string;
@@ -13,7 +13,11 @@ interface Props {
   onAddLesson: (activityId: string) => void;
   onAddAssignment: (activityId: string) => void;
   onAddAssessment: (activityId: string) => void;
-  onAddQuestion: (assessmentId: string) => void;
+  onManageQuestions: (assessmentId: string) => void;
+  onEditActivity: (activity: ViewActivity) => void;
+  onEditLesson: (activityId: string, lessonId: string) => void;
+  onEditAssignment: (activityId: string, assignmentId: string) => void;
+  onEditAssessment: (activityId: string, assessmentId: string) => void;
 }
 
 export default function ModuleActivitiesTable({
@@ -22,7 +26,11 @@ export default function ModuleActivitiesTable({
   onAddLesson,
   onAddAssignment,
   onAddAssessment,
-  onAddQuestion,
+  onManageQuestions,
+  onEditActivity,
+  onEditLesson,
+  onEditAssignment,
+  onEditAssessment,
 }: Props) {
   const queryClient = useQueryClient();
 
@@ -86,12 +94,39 @@ export default function ModuleActivitiesTable({
                   Add exam shell
                 </Button>
               )}
+              <Button size="small" onClick={() => onEditActivity(row)}>
+                Edit activity
+              </Button>
+              {row.type === ActivityType.Lesson && row.resourceId && (
+                <Button
+                  size="small"
+                  onClick={() => onEditLesson(row.id, row.resourceId!)}
+                >
+                  Edit lesson
+                </Button>
+              )}
+              {row.type === ActivityType.Assignment && row.resourceId && (
+                <Button
+                  size="small"
+                  onClick={() => onEditAssignment(row.id, row.resourceId!)}
+                >
+                  Edit assignment
+                </Button>
+              )}
               {row.type === ActivityType.Assessment && row.resourceId && (
                 <Button
                   size="small"
-                  onClick={() => onAddQuestion(row.resourceId!)}
+                  onClick={() => onEditAssessment(row.id, row.resourceId!)}
                 >
-                  Add question
+                  Edit assessment
+                </Button>
+              )}
+              {row.type === ActivityType.Assessment && row.resourceId && (
+                <Button
+                  size="small"
+                  onClick={() => onManageQuestions(row.resourceId!)}
+                >
+                  Manage questions
                 </Button>
               )}
               <Button

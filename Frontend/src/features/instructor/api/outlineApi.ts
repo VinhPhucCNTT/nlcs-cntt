@@ -6,7 +6,16 @@ import type {
   CreateAssignmentPayload,
   CreateLessonPayload,
   CreateModulePayload,
+  UpdateActivityPayload,
+  UpdateAssessmentPayload,
+  UpdateAssessmentQuestionPayload,
+  UpdateAssignmentPayload,
+  UpdateLessonPayload,
+  ViewAssessment,
+  ViewAssignment,
   ViewActivity,
+  ViewLesson,
+  ViewQuestion,
   ViewModule,
 } from "@/shared/types/lms";
 
@@ -59,6 +68,13 @@ export const getActivities = async (
   return data;
 };
 
+export const updateActivity = async (
+  id: string,
+  payload: UpdateActivityPayload,
+): Promise<void> => {
+  await api.post(`/activities/${id}`, payload);
+};
+
 export const deleteActivity = async (id: string): Promise<void> => {
   await api.delete(`/activities/${id}`);
 };
@@ -74,6 +90,18 @@ export const createLesson = async (
   return data;
 };
 
+export const getLesson = async (id: string): Promise<ViewLesson> => {
+  const { data } = await api.get<ViewLesson>(`/lessons/${id}`);
+  return data;
+};
+
+export const updateLesson = async (
+  id: string,
+  payload: UpdateLessonPayload,
+): Promise<void> => {
+  await api.post(`/lessons/${id}`, payload);
+};
+
 export const createAssignment = async (
   activityId: string,
   payload: CreateAssignmentPayload,
@@ -83,6 +111,18 @@ export const createAssignment = async (
     payload,
   );
   return data;
+};
+
+export const getAssignment = async (id: string): Promise<ViewAssignment> => {
+  const { data } = await api.get<ViewAssignment>(`/assignments/${id}`);
+  return data;
+};
+
+export const updateAssignment = async (
+  id: string,
+  payload: UpdateAssignmentPayload,
+): Promise<void> => {
+  await api.post(`/assignments/${id}`, payload);
 };
 
 export const createAssessment = async (
@@ -96,6 +136,25 @@ export const createAssessment = async (
   return data;
 };
 
+export const getAssessment = async (id: string): Promise<ViewAssessment> => {
+  const { data } = await api.get<ViewAssessment>(`/assessments/${id}`);
+  return data;
+};
+
+export const updateAssessment = async (
+  id: string,
+  payload: UpdateAssessmentPayload,
+): Promise<void> => {
+  await api.post(`/assessments/${id}`, payload);
+};
+
+export const getAssessmentQuestions = async (
+  id: string,
+): Promise<ViewQuestion[]> => {
+  const { data } = await api.get<ViewQuestion[]>(`/assessments/${id}/questions`);
+  return data;
+};
+
 export const addAssessmentQuestion = async (
   assessmentId: string,
   payload: CreateAssessmentQuestionPayload,
@@ -105,4 +164,17 @@ export const addAssessmentQuestion = async (
     payload,
   );
   return data;
+};
+
+export const updateAssessmentQuestion = async (
+  id: string,
+  payload: UpdateAssessmentQuestionPayload,
+): Promise<void> => {
+  await api.post(`/questions/${id}`, payload);
+};
+
+export const deleteAssessmentQuestion = async (
+  id: string,
+): Promise<void> => {
+  await api.delete(`/questions/${id}`);
 };

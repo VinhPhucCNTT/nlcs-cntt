@@ -1,5 +1,6 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import {
+  List,
   Button,
   Form,
   Input,
@@ -22,14 +23,25 @@ import {
   createAssessment,
   createAssignment,
   createLesson,
+  deleteAssessmentQuestion,
   createModule,
+  getAssessment,
+  getAssessmentQuestions,
+  getAssignment,
+  getLesson,
   deleteModule,
   getModules,
+  updateActivity,
+  updateAssessment,
+  updateAssessmentQuestion,
+  updateAssignment,
+  updateLesson,
 } from "@/features/instructor/api/outlineApi";
 import {
   ActivityType,
   AssessmentType,
   QuestionType,
+  type ViewActivity,
   type CreateAssessmentPayload,
   type CreateAssignmentPayload,
   type CreateLessonPayload,
@@ -43,18 +55,25 @@ export default function CourseBuilderPage() {
   const [msg, ctx] = message.useMessage();
 
   const [moduleOpen, setModuleOpen] = useState(false);
-  const [activityOpen, setActivityOpen] = useState<string | null>(null);
+  const [activityOpen, setActivityOpen] = useState<{
+    moduleId: string;
+    activity?: ViewActivity;
+  } | null>(null);
   const [lessonOpen, setLessonOpen] = useState<{
     activityId: string;
+    lessonId?: string;
   } | null>(null);
   const [assignOpen, setAssignOpen] = useState<{
     activityId: string;
+    assignmentId?: string;
   } | null>(null);
   const [assessOpen, setAssessOpen] = useState<{
     activityId: string;
+    assessmentId?: string;
   } | null>(null);
   const [questionOpen, setQuestionOpen] = useState<{
     assessmentId: string;
+    questionId?: string;
   } | null>(null);
 
   const [moduleForm] = Form.useForm<{ title: string; orderIndex: number }>();
@@ -83,6 +102,12 @@ export default function CourseBuilderPage() {
     enabled: !!courseId,
   });
 
+  const questionsQuery = useQuery({
+    queryKey: ["assessment", questionOpen?.assessmentId, "questions"],
+    queryFn: () => getAssessmentQuestions(questionOpen!.assessmentId),
+    enabled: !!questionOpen?.assessmentId,
+  });
+
   const createModuleMut = useMutation({
     mutationFn: (v: { title: string; orderIndex: number }) =>
       createModule(courseId!, v),
@@ -102,6 +127,107 @@ export default function CourseBuilderPage() {
     },
     onError: () => msg.error("Failed."),
   });
+
+  const openCreateActivity = (moduleId: string) => {
+    activityForm.resetFields();
+    activityForm.setFieldsValue({
+      title: "",
+      type: ActivityType.Lesson,
+      orderIndex: 0,
+      isPublished: true,
+    });
+    setActivityOpen({ moduleId });
+  };
+
+  const openEditActivity = (moduleId: string, activity: ViewActivity) => {
+    activityForm.resetFields();
+    activityForm.setFieldsValue({
+      title: activity.title,
+      type: activity.type,
+      orderIndex: activity.orderIndex,
+      isPublished: activity.isPublished,
+    });
+    setActivityOpen({ moduleId, activity });
+  };
+
+  const openCreateLesson = (activityId: string) => {
+    lessonForm.resetFields();
+    setLessonOpen({ activityId });
+  };
+
+  const openEditLesson = async (activityId: string, lessonId: string) => {
+    const lesson = await getLesson(lessonId);
+    lessonForm.resetFields();
+    lessonForm.setFieldsValue({
+      contentHtml: lesson.contentHtml,
+      videoUrl: lesson.videoUrl ?? undefined,
+      attachmentUrl: lesson.attachmentUrl ?? undefined,
+    });
+    setLessonOpen({ activityId, lessonId });
+  };
+
+  const openCreateAssignment = (activityId: string) => {
+    assignForm.resetFields();
+    assignForm.setFieldsValue({
+      allowLateSubmission: true,
+      maxPoints: 100,
+      instructions: "",
+      dueDate: undefined,
+    });
+    setAssignOpen({ activityId });
+  };
+
+  const openEditAssignment = async (activityId: string, assignmentId: string) => {
+    const assignment = await getAssignment(assignmentId);
+    assignForm.resetFields();
+    assignForm.setFieldsValue({
+      instructions: assignment.instructions,
+      dueDate: assignment.dueDate ?? undefined,
+      allowLateSubmission: assignment.allowLateSubmission,
+      maxPoints: assignment.maxPoints,
+    });
+    setAssignOpen({ activityId, assignmentId });
+  };
+
+  const openCreateAssessment = (activityId: string) => {
+    assessForm.resetFields();
+    assessForm.setFieldsValue({
+      timeLimitMinutes: 30,
+      maxAttempts: 3,
+      passingScore: 50,
+      shuffleQuestions: false,
+      type: AssessmentType.Quiz,
+    });
+    setAssessOpen({ activityId });
+  };
+
+  const openEditAssessment = async (activityId: string, assessmentId: string) => {
+    const assessment = await getAssessment(assessmentId);
+    assessForm.resetFields();
+    assessForm.setFieldsValue({
+      type: assessment.type,
+      timeLimitMinutes: assessment.timeLimitMinutes,
+      maxAttempts: assessment.maxAttempts,
+      passingScore: assessment.passingScore,
+      shuffleQuestions: assessment.shuffleQuestions,
+      password: "",
+    });
+    setAssessOpen({ activityId, assessmentId });
+  };
+
+  const openManageQuestions = (assessmentId: string) => {
+    qForm.resetFields();
+    qForm.setFieldsValue({
+      type: QuestionType.SingleChoice,
+      points: 1,
+      orderIndex: 0,
+      options: [
+        { optionText: "", isCorrect: true },
+        { optionText: "", isCorrect: false },
+      ],
+    });
+    setQuestionOpen({ assessmentId });
+  };
 
   if (!courseId) return <Text type="danger">Missing course id.</Text>;
 
@@ -128,7 +254,7 @@ export default function CourseBuilderPage() {
             <Title level={4} style={{ margin: 0 }}>
               {mod.title}
             </Title>
-            <Button size="small" onClick={() => setActivityOpen(mod.id)}>
+            <Button size="small" onClick={() => openCreateActivity(mod.id)}>
               Add activity
             </Button>
             <Button
@@ -147,10 +273,14 @@ export default function CourseBuilderPage() {
           <ModuleActivitiesTable
             moduleId={mod.id}
             courseId={courseId}
-            onAddLesson={(id) => setLessonOpen({ activityId: id })}
-            onAddAssignment={(id) => setAssignOpen({ activityId: id })}
-            onAddAssessment={(id) => setAssessOpen({ activityId: id })}
-            onAddQuestion={(assessmentId) => setQuestionOpen({ assessmentId })}
+            onAddLesson={openCreateLesson}
+            onAddAssignment={openCreateAssignment}
+            onAddAssessment={openCreateAssessment}
+            onManageQuestions={openManageQuestions}
+            onEditActivity={(activity) => openEditActivity(mod.id, activity)}
+            onEditLesson={openEditLesson}
+            onEditAssignment={openEditAssignment}
+            onEditAssessment={openEditAssessment}
           />
         </div>
       ))}
@@ -186,7 +316,7 @@ export default function CourseBuilderPage() {
       </Modal>
 
       <Modal
-        title="New activity"
+        title={activityOpen?.activity ? "Edit activity" : "New activity"}
         open={!!activityOpen}
         onCancel={() => setActivityOpen(null)}
         onOk={() => activityForm.submit()}
@@ -198,16 +328,28 @@ export default function CourseBuilderPage() {
           initialValues={{ isPublished: true, orderIndex: 0, type: ActivityType.Lesson }}
           onFinish={async (v) => {
             if (!activityOpen) return;
-            const moduleId = activityOpen;
-            await createActivity(moduleId, {
-              title: v.title,
-              type: v.type,
-              orderIndex: v.orderIndex,
-              isPublished: v.isPublished,
-              availableFrom: null,
-              availableUntil: null,
-            });
-            msg.success("Activity created.");
+            const moduleId = activityOpen.moduleId;
+            if (activityOpen.activity) {
+              await updateActivity(activityOpen.activity.id, {
+                title: v.title,
+                type: v.type,
+                orderIndex: v.orderIndex,
+                isPublished: v.isPublished,
+                availableFrom: activityOpen.activity.availableFrom,
+                availableUntil: activityOpen.activity.availableUntil,
+              });
+              msg.success("Activity updated.");
+            } else {
+              await createActivity(moduleId, {
+                title: v.title,
+                type: v.type,
+                orderIndex: v.orderIndex,
+                isPublished: v.isPublished,
+                availableFrom: null,
+                availableUntil: null,
+              });
+              msg.success("Activity created.");
+            }
             activityForm.resetFields();
             setActivityOpen(null);
             void queryClient.invalidateQueries({
@@ -220,6 +362,7 @@ export default function CourseBuilderPage() {
           </Form.Item>
           <Form.Item name="type" label="Type" rules={[{ required: true }]}>
             <Select
+              disabled={!!activityOpen?.activity}
               options={[
                 { value: ActivityType.Lesson, label: "Lesson" },
                 { value: ActivityType.Assignment, label: "Assignment" },
@@ -237,7 +380,7 @@ export default function CourseBuilderPage() {
       </Modal>
 
       <Modal
-        title="Lesson content"
+        title={lessonOpen?.lessonId ? "Edit lesson content" : "Lesson content"}
         open={!!lessonOpen}
         onCancel={() => setLessonOpen(null)}
         onOk={() => lessonForm.submit()}
@@ -249,8 +392,13 @@ export default function CourseBuilderPage() {
           layout="vertical"
           onFinish={async (v) => {
             if (!lessonOpen) return;
-            await createLesson(lessonOpen.activityId, v);
-            msg.success("Lesson saved.");
+            if (lessonOpen.lessonId) {
+              await updateLesson(lessonOpen.lessonId, v);
+              msg.success("Lesson updated.");
+            } else {
+              await createLesson(lessonOpen.activityId, v);
+              msg.success("Lesson created.");
+            }
             setLessonOpen(null);
             void queryClient.invalidateQueries({ queryKey: ["module"] });
             void queryClient.invalidateQueries({
@@ -275,7 +423,7 @@ export default function CourseBuilderPage() {
       </Modal>
 
       <Modal
-        title="Assignment details"
+        title={assignOpen?.assignmentId ? "Edit assignment details" : "Assignment details"}
         open={!!assignOpen}
         onCancel={() => setAssignOpen(null)}
         onOk={() => assignForm.submit()}
@@ -291,8 +439,13 @@ export default function CourseBuilderPage() {
           }}
           onFinish={async (v) => {
             if (!assignOpen) return;
-            await createAssignment(assignOpen.activityId, v);
-            msg.success("Assignment created.");
+            if (assignOpen.assignmentId) {
+              await updateAssignment(assignOpen.assignmentId, v);
+              msg.success("Assignment updated.");
+            } else {
+              await createAssignment(assignOpen.activityId, v);
+              msg.success("Assignment created.");
+            }
             setAssignOpen(null);
             void queryClient.invalidateQueries({ queryKey: ["module"] });
             void queryClient.invalidateQueries({
@@ -324,7 +477,7 @@ export default function CourseBuilderPage() {
       </Modal>
 
       <Modal
-        title="Assessment (exam) settings"
+        title={assessOpen?.assessmentId ? "Edit assessment settings" : "Assessment (exam) settings"}
         open={!!assessOpen}
         onCancel={() => setAssessOpen(null)}
         onOk={() => assessForm.submit()}
@@ -350,8 +503,13 @@ export default function CourseBuilderPage() {
               passingScore: v.passingScore,
               shuffleQuestions: v.shuffleQuestions,
             };
-            await createAssessment(assessOpen.activityId, payload);
-            msg.success("Assessment created. Add questions next.");
+            if (assessOpen.assessmentId) {
+              await updateAssessment(assessOpen.assessmentId, payload);
+              msg.success("Assessment updated.");
+            } else {
+              await createAssessment(assessOpen.activityId, payload);
+              msg.success("Assessment created. Add questions next.");
+            }
             setAssessOpen(null);
             void queryClient.invalidateQueries({ queryKey: ["module"] });
             void queryClient.invalidateQueries({
@@ -390,7 +548,11 @@ export default function CourseBuilderPage() {
       </Modal>
 
       <Modal
-        title="Add exam question"
+        title={
+          questionOpen?.questionId
+            ? "Edit exam question"
+            : "Manage exam questions"
+        }
         open={!!questionOpen}
         onCancel={() => setQuestionOpen(null)}
         onOk={() => qForm.submit()}
@@ -411,15 +573,25 @@ export default function CourseBuilderPage() {
           }}
           onFinish={async (v) => {
             if (!questionOpen) return;
-            await addAssessmentQuestion(questionOpen.assessmentId, {
+            const payload = {
               questionText: v.questionText,
               type: v.type,
               points: v.points,
               orderIndex: v.orderIndex,
               options: v.options.filter((o) => o.optionText.trim().length > 0),
+            };
+            if (questionOpen.questionId) {
+              await updateAssessmentQuestion(questionOpen.questionId, payload);
+              msg.success("Question updated.");
+            } else {
+              await addAssessmentQuestion(questionOpen.assessmentId, payload);
+              msg.success("Question added.");
+            }
+            qForm.resetFields();
+            setQuestionOpen({ assessmentId: questionOpen.assessmentId });
+            void queryClient.invalidateQueries({
+              queryKey: ["assessment", questionOpen.assessmentId, "questions"],
             });
-            msg.success("Question added.");
-            setQuestionOpen(null);
             void queryClient.invalidateQueries({ queryKey: ["module"] });
           }}
         >
@@ -477,6 +649,63 @@ export default function CourseBuilderPage() {
             )}
           </Form.List>
         </Form>
+        <Divider />
+        <List
+          size="small"
+          loading={questionsQuery.isLoading}
+          dataSource={questionsQuery.data ?? []}
+          renderItem={(question) => (
+            <List.Item
+              actions={[
+                <Button
+                  key="edit"
+                  size="small"
+                  onClick={() => {
+                    qForm.setFieldsValue({
+                      questionText: question.questionText,
+                      type: question.type,
+                      points: question.points,
+                      orderIndex: question.orderIndex,
+                      options: question.options.map((o) => ({
+                        optionText: o.optionText,
+                        isCorrect: o.isCorrect,
+                      })),
+                    });
+                    setQuestionOpen({
+                      assessmentId: questionOpen!.assessmentId,
+                      questionId: question.id,
+                    });
+                  }}
+                >
+                  Edit
+                </Button>,
+                <Button
+                  key="delete"
+                  size="small"
+                  danger
+                  onClick={async () => {
+                    await deleteAssessmentQuestion(question.id);
+                    msg.success("Question removed.");
+                    if (questionOpen?.questionId === question.id) {
+                      qForm.resetFields();
+                      setQuestionOpen({ assessmentId: questionOpen.assessmentId });
+                    }
+                    void queryClient.invalidateQueries({
+                      queryKey: ["assessment", questionOpen?.assessmentId, "questions"],
+                    });
+                  }}
+                >
+                  Delete
+                </Button>,
+              ]}
+            >
+              <List.Item.Meta
+                title={question.questionText}
+                description={`Points: ${question.points} | Options: ${question.options.length}`}
+              />
+            </List.Item>
+          )}
+        />
       </Modal>
     </div>
   );

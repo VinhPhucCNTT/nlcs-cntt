@@ -57,6 +57,7 @@ export interface ViewActivity {
   title: string;
   type: ActivityType;
   orderIndex: number;
+  isPublished: boolean;
   availableFrom: string | null;
   availableUntil: string | null;
   resourceId: string | null;
@@ -86,6 +87,7 @@ export interface ViewAssignment {
   id: string;
   instructions: string;
   dueDate: string | null;
+  allowLateSubmission: boolean;
   maxPoints: number;
 }
 
@@ -106,6 +108,7 @@ export interface ViewAssessment {
 export interface ViewQuestionOption {
   id: string;
   optionText: string;
+  isCorrect: boolean;
 }
 
 export interface ViewQuestion {
@@ -146,13 +149,35 @@ export interface CreateActivityPayload {
   availableUntil?: string | null;
 }
 
+export interface UpdateActivityPayload {
+  title: string;
+  type: ActivityType;
+  orderIndex: number;
+  isPublished: boolean;
+  availableFrom?: string | null;
+  availableUntil?: string | null;
+}
+
 export interface CreateLessonPayload {
   contentHtml: string;
   videoUrl?: string | null;
   attachmentUrl?: string | null;
 }
 
+export interface UpdateLessonPayload {
+  contentHtml: string;
+  videoUrl?: string | null;
+  attachmentUrl?: string | null;
+}
+
 export interface CreateAssignmentPayload {
+  instructions: string;
+  dueDate?: string | null;
+  allowLateSubmission: boolean;
+  maxPoints: number;
+}
+
+export interface UpdateAssignmentPayload {
   instructions: string;
   dueDate?: string | null;
   allowLateSubmission: boolean;
@@ -168,7 +193,24 @@ export interface CreateAssessmentPayload {
   shuffleQuestions: boolean;
 }
 
+export interface UpdateAssessmentPayload {
+  type: AssessmentType;
+  timeLimitMinutes: number;
+  maxAttempts: number;
+  password?: string | null;
+  passingScore: number;
+  shuffleQuestions: boolean;
+}
+
 export interface CreateAssessmentQuestionPayload {
+  questionText: string;
+  type: QuestionType;
+  points: number;
+  orderIndex: number;
+  options: { optionText: string; isCorrect: boolean }[];
+}
+
+export interface UpdateAssessmentQuestionPayload {
   questionText: string;
   type: QuestionType;
   points: number;
