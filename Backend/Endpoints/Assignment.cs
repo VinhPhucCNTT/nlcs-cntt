@@ -16,6 +16,9 @@ public static class AssignmentEndpoints
         app.MapGet("/api/assignments/{id:guid}", Get)
             .RequireAuthorization(p => p.RequireRole("Instructor", "Student"));
 
+        app.MapPost("/api/assignments/{id:guid}", Update)
+            .RequireAuthorization(p => p.RequireRole("Instructor"));
+
         app.MapPost("/api/assignments/{id:guid}/submit", Submit)
             .RequireAuthorization(p => p.RequireRole("Student"));
     }
@@ -38,6 +41,17 @@ public static class AssignmentEndpoints
             return TypedResults.NotFound();
 
         return TypedResults.Ok(assignment);
+    }
+
+    private static async Task<Results<NoContent, NotFound>> Update(
+        Guid id,
+        UpdateAssignmentDto dto,
+        IAssignmentService service)
+    {
+        var updated = await service.UpdateAsync(id, dto);
+        return updated
+            ? TypedResults.NoContent()
+            : TypedResults.NotFound();
     }
 
     private static async Task<NoContent> Submit(

@@ -76,7 +76,8 @@ public class AssessmentService(
                 q.Options
                     .Select(o => new ViewQuestionOptionDto(
                         o.Id,
-                        o.OptionText
+                        o.OptionText,
+                        o.IsCorrect
                     )).ToList()
             )).ToList();
     }
@@ -87,6 +88,7 @@ public class AssessmentService(
         if (assessment is null)
             return false;
 
+        assessment.Type = dto.Type;
         assessment.TimeLimitMinutes = dto.TimeLimitMinutes;
         assessment.MaxAttempts = dto.MaxAttempts;
         assessment.Password = dto.Password;
@@ -201,7 +203,7 @@ public class AssessmentService(
         return question.Id;
     }
 
-    private bool IsQuestionCorrect(SubmitAnswerDto answer, AssessmentQuestion question)
+    private static bool IsQuestionCorrect(SubmitAnswerDto answer, AssessmentQuestion question)
     {
         bool result = false;
 
@@ -241,20 +243,22 @@ public class AssessmentService(
         question.Points = dto.Points;
         question.OrderIndex = dto.OrderIndex;
 
-        question.Options.Clear();
-        foreach (var option in dto.Options ?? new List<UpdateQuestionOptionDto>())
-        {
-            question.Options.Add(new QuestionOption
-            {
-                Id = Guid.NewGuid(),
-                QuestionId = question.Id,
-                OptionText = option.OptionText,
-                IsCorrect = option.IsCorrect
-            });
-        }
-
         _questionRepo.Update(question);
         await _uow.SaveChangesAsync();
+
+        if (dto.Options.Count > 0) {
+            question.Options.Clear();
+            foreach (var option in dto.Options)
+            {
+                question.Options.Add(new QuestionOption
+                {
+                    QuestionId = question.Id,
+                    OptionText = option.OptionText,
+                    IsCorrect = option.IsCorrect
+                });
+            }
+            await _uow.SaveChangesAsync();
+        }
 
         return true;
     }

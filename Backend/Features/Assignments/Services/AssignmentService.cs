@@ -44,6 +44,7 @@ public class AssignmentService(
             assignment.Id,
             assignment.Instructions,
             assignment.DueDate,
+            assignment.AllowLateSubmission,
             assignment.MaxPoints
         );
     }

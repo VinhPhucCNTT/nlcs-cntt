@@ -6,7 +6,7 @@ namespace Backend.Data.Repositories;
 public class QuestionRepository(AppDbContext db) : IQuestionRepository
 {
     private readonly AppDbContext _db = db;
-    
+
     public async Task<AssessmentQuestion?> GetQuestionByIdAsync(Guid id)
     {
         return await _db.AssessmentQuestions

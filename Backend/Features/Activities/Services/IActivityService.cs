@@ -8,5 +8,7 @@ public interface IActivityService
 
     Task<List<ViewActivityDto>> GetByModuleAsync(Guid moduleId);
 
+    Task<bool> UpdateAsync(Guid id, UpdateActivityDto dto);
+
     Task<bool> DeleteAsync(Guid id);
 }

@@ -45,10 +45,31 @@ public class ActivityService(
                 x.Title,
                 x.Type,
                 x.OrderIndex,
+                x.IsPublished,
                 x.AvailableFrom,
                 x.AvailableUntil,
                 x.GetResourceId()
             )).ToList();
+    }
+
+    public async Task<bool> UpdateAsync(
+        Guid id,
+        UpdateActivityDto dto)
+    {
+        var activity = await _activityRepo.GetByIdAsync(id);
+        if (activity is null)
+            return false;
+
+        activity.Title = dto.Title;
+        activity.Type = dto.Type;
+        activity.OrderIndex = dto.OrderIndex;
+        activity.IsPublished = dto.IsPublished;
+        activity.AvailableFrom = dto.AvailableFrom;
+        activity.AvailableUntil = dto.AvailableUntil;
+
+        _activityRepo.Update(activity);
+        await _uow.SaveChangesAsync();
+        return true;
     }
 
     public async Task<bool> DeleteAsync(Guid id)

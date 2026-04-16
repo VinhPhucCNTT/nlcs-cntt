@@ -15,12 +15,23 @@ public static class AuthEndpoints
     public record UserRegisterRequest(string FullName, string Email, string Username, string Password, string Role);
     public record UserRegisterResponse(string Email);
 
+    public record UserResponse(
+        Guid Id,
+        string? Email,
+        string? UserName,
+        string FullName,
+        DateTime CreatedAt,
+        string Role
+    );
+
     public static void AddAuthEndpoints(this IEndpointRouteBuilder app)
     {
         var auth = app.MapGroup("/api/auth");
 
         auth.MapPost("login", HandleLogin);
         auth.MapPost("register", HandleRegister);
+        auth.MapGet("students", HandleGetStudents);
+        auth.MapGet("instructors", HandleGetInstructors);
     }
 
     private static async
@@ -41,7 +52,7 @@ public static class AuthEndpoints
         return TypedResults.Ok<UserLoginResponse>(new(request.Email, token));
     }
 
-    private static async 
+    private static async
         Task<Results<Ok<UserRegisterResponse>, UnauthorizedHttpResult, BadRequest<List<IdentityError>>>>
         HandleRegister(
             UserRegisterRequest request,
@@ -76,4 +87,39 @@ public static class AuthEndpoints
 
         return TypedResults.Ok<UserRegisterResponse>(new(request.Email));
     }
+
+    private static async Task<List<UserResponse>>
+        HandleGetStudents(UserManager<ApplicationUser> userManager)
+    {
+        return await HandleGetUsersInRole("Student", userManager);
+    }
+
+    private static async Task<List<UserResponse>>
+        HandleGetInstructors(UserManager<ApplicationUser> userManager)
+    {
+        return await HandleGetUsersInRole("Instructor", userManager);
+    }
+
+    private static async Task<List<UserResponse>>
+        HandleGetUsersInRole(string role, UserManager<ApplicationUser> userManager)
+    {
+        var users = await userManager.GetUsersInRoleAsync(role);
+
+        var result = new List<UserResponse>();
+
+        foreach (var user in users)
+        {
+            result.Add(new UserResponse(
+                user.Id,
+                user.Email,
+                user.UserName,
+                user.FullName,
+                user.CreatedAt,
+                role
+            ));
+        }
+
+        return result;
+    }
+
 }

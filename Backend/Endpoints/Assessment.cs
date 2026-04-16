@@ -18,10 +18,19 @@ public static class AssessmentEndpoints
         app.MapGet("/api/assessments/{id:guid}", Get)
             .RequireAuthorization(p => p.RequireRole("Instructor", "Student"));
 
+        app.MapPost("/api/assessments/{id:guid}", Update)
+            .RequireAuthorization(p => p.RequireRole("Instructor"));
+
         app.MapGet("/api/assessments/{id:guid}/questions", GetQuestions)
             .RequireAuthorization(p => p.RequireRole("Instructor", "Student"));
 
         app.MapPost("/api/assessments/{id:guid}/questions", AddQuestion)
+            .RequireAuthorization(p => p.RequireRole("Instructor"));
+
+        app.MapPost("/api/questions/{id:guid}", UpdateQuestion)
+            .RequireAuthorization(p => p.RequireRole("Instructor"));
+
+        app.MapDelete("/api/questions/{id:guid}", DeleteQuestion)
             .RequireAuthorization(p => p.RequireRole("Instructor"));
 
         app.MapPost("/api/assessments/{id:guid}/submit", Submit)
@@ -58,6 +67,17 @@ public static class AssessmentEndpoints
             : TypedResults.Ok(list);
     }
 
+    private static async Task<Results<NoContent, NotFound>> Update(
+        Guid id,
+        UpdateAssessmentDto dto,
+        IAssessmentService service)
+    {
+        var updated = await service.UpdateAsync(id, dto);
+        return updated
+            ? TypedResults.NoContent()
+            : TypedResults.NotFound();
+    }
+
     private static async Task<Results<Ok<Guid>, NotFound>> AddQuestion(
         Guid id,
         CreateAssessmentQuestionBody dto,
@@ -67,6 +87,27 @@ public static class AssessmentEndpoints
         return questionId is null
             ? TypedResults.NotFound()
             : TypedResults.Ok(questionId.Value);
+    }
+
+    private static async Task<Results<NoContent, NotFound>> UpdateQuestion(
+        Guid id,
+        UpdateQuestionDto dto,
+        IAssessmentService service)
+    {
+        var updated = await service.UpdateQuestionAsync(id, dto);
+        return updated
+            ? TypedResults.NoContent()
+            : TypedResults.NotFound();
+    }
+
+    private static async Task<Results<NoContent, NotFound>> DeleteQuestion(
+        Guid id,
+        IAssessmentService service)
+    {
+        var deleted = await service.DeleteQuestionAsync(id);
+        return deleted
+            ? TypedResults.NoContent()
+            : TypedResults.NotFound();
     }
 
     private static async Task<Results<Ok<AssessmentResultDto>, NotFound>> Submit(

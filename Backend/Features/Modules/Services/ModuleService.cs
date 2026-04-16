@@ -52,6 +52,7 @@ public class ModuleService(
                         a.Title,
                         a.Type,
                         a.OrderIndex,
+                        a.IsPublished,
                         a.AvailableFrom,
                         a.AvailableUntil,
                         a.GetResourceId()
